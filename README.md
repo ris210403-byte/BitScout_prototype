@@ -44,14 +44,50 @@ npx @bubblewrap/cli build
 That produces a signed `.aab` you can upload to Play Console. (Capacitor is the alternative
 if you later need native camera/geolocation APIs beyond what the web gives you.)
 
+## Firebase — where to find your keys
+
+1. console.firebase.google.com → your project
+2. gear icon → **Project settings**
+3. scroll to **Your apps**. If there is no web app, click the **</>** icon and register one (nickname "biteScout web", no hosting needed).
+4. under **SDK setup and configuration** choose **Config** — you get a block like
+   `const firebaseConfig = { apiKey: "AIza…", authDomain: "…", projectId: "…", … }`
+5. copy that whole block, then in the app: **Me → gear → "Saving on this phone only"** → paste → **Connect**.
+
+Then in the Firebase console enable:
+- **Authentication → Sign-in method → Google** (and **Email link** if you want passwordless email)
+- **Firestore Database → Create database** (production mode is fine)
+- **Storage → Get started** (for check-in photos)
+
+While you're just testing with friends, these Firestore rules are enough:
+
+```
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{db}/documents {
+    match /spots/{id}    { allow read: if true; allow write: if request.auth != null; }
+    match /checkins/{id} { allow read: if true; allow create: if request.auth != null; }
+    match /lists/{id}    { allow read, write: if request.auth != null; }
+    match /users/{uid}   { allow read, write: if request.auth != null && request.auth.uid == uid; }
+  }
+}
+```
+
+Until you connect Firebase the app runs in on-device mode: everything works and persists, it just
+doesn't sync between phones. Settings → "Reset prototype data" wipes it.
+
 ## What is real vs. mocked in this build
 
-Real: navigation, all screen states, live search, filters, saving, list building, check-in
-gating and validation, follow/unfollow, messages, settings toggles, install prompt, offline shell.
+Real: your GPS position and true distances to every spot, the 150 m check-in rule, camera
+photos (stored on device, uploaded to Firebase Storage once connected), saving, list building,
+adding new places, streak and level from your actual check-ins, offline shell, install to home screen.
 
-Mocked: the 9 spots and 5 scouts are in-memory data in `index.html`; the map is a stylised
-placeholder; sign-in is simulated; photos are labelled placeholder blocks. Nothing persists
-across a reload.
+Mocked: the other scouts (Aisyah, Wei Jun…), the activity feed, messages, and the Nearby map
+visual — the map is still the stylised placeholder, real tiles are the next step. Photos of the
+seed spots are labelled placeholders until someone checks in with a real photo.
+
+Note on the seed data: on first launch the nine starter spots are planted around wherever you
+actually are (90 m, 250 m, 500 m, 1.5 km…) plus the real Penang and JB ones. That way distances
+and the check-in radius are testable without driving to Bangsar.
 
 ## Next steps to make it a product
 

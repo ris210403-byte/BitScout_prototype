@@ -22,12 +22,14 @@
     <path d="M152 156l8 9 15-17" fill="none" stroke="#FFFFFF" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>
   </svg>
 </template>
+<script src="./bitescout-live.js"></script>
 <script src="./support.js"></script>
 </head>
 <body>
 <x-dc>
 <helmet>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<script src="./bitescout-live.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 html,body{margin:0;height:100%;background:#F6F9FE;overscroll-behavior:none;-webkit-tap-highlight-color:transparent}
@@ -248,7 +250,8 @@ input::placeholder,textarea::placeholder{color:#93A3BF}
         <sc-for list="{{ feedSpots }}" as="s" hint-placeholder-count="3">
           <div onClick="{{ s.open }}" style="border-radius:18px; overflow:hidden; background:#fff; border:1px solid #E3EAF6; box-shadow:0 2px 8px rgba(20,33,61,.05); cursor:pointer; font-family:'Plus Jakarta Sans',system-ui,sans-serif" style-hover="border-color:#C9D6EE">
   <div style="position:relative; height:128px; background:repeating-linear-gradient(135deg,#E7EDF7 0 10px,#DFE7F4 10px 20px); display:flex; align-items:center; justify-content:center">
-    <span style="font-family:ui-monospace,Menlo,monospace; font-size:10.5px; letter-spacing:.4px; color:#8798B8; text-transform:uppercase">{{ s.slot }}</span>
+    <sc-if value="{{ s.noPhoto }}" hint-placeholder-val="{{ true }}"><span style="font-family:ui-monospace,Menlo,monospace; font-size:10.5px; letter-spacing:.4px; color:#8798B8; text-transform:uppercase">{{ s.slot }}</span></sc-if>
+    {{ s.photoEl }}
     <div style="position:absolute; top:11px; left:11px; display:flex; align-items:center; gap:5px; padding:5px 10px; border-radius:99px; background:rgba(255,255,255,.94); box-shadow:0 2px 6px rgba(20,33,61,.12)">
       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#1B4BD2" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg>
       <span style="font-size:11px; font-weight:700; color:#1B4BD2">{{ s.visits }} real visits</span>
@@ -334,7 +337,8 @@ input::placeholder,textarea::placeholder{color:#93A3BF}
           <sc-for list="{{ citySpots }}" as="s" hint-placeholder-count="4">
             <div onClick="{{ s.open }}" style="border-radius:18px; overflow:hidden; background:#fff; border:1px solid #E3EAF6; box-shadow:0 2px 8px rgba(20,33,61,.05); cursor:pointer; font-family:'Plus Jakarta Sans',system-ui,sans-serif" style-hover="border-color:#C9D6EE">
   <div style="position:relative; height:128px; background:repeating-linear-gradient(135deg,#E7EDF7 0 10px,#DFE7F4 10px 20px); display:flex; align-items:center; justify-content:center">
-    <span style="font-family:ui-monospace,Menlo,monospace; font-size:10.5px; letter-spacing:.4px; color:#8798B8; text-transform:uppercase">{{ s.slot }}</span>
+    <sc-if value="{{ s.noPhoto }}" hint-placeholder-val="{{ true }}"><span style="font-family:ui-monospace,Menlo,monospace; font-size:10.5px; letter-spacing:.4px; color:#8798B8; text-transform:uppercase">{{ s.slot }}</span></sc-if>
+    {{ s.photoEl }}
     <div style="position:absolute; top:11px; left:11px; display:flex; align-items:center; gap:5px; padding:5px 10px; border-radius:99px; background:rgba(255,255,255,.94); box-shadow:0 2px 6px rgba(20,33,61,.12)">
       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#1B4BD2" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg>
       <span style="font-size:11px; font-weight:700; color:#1B4BD2">{{ s.visits }} real visits</span>
@@ -372,17 +376,26 @@ input::placeholder,textarea::placeholder{color:#93A3BF}
       <div style="margin-top:5px; font-size:13.5px; line-height:1.5; color:#5A6B8C">Pick the spot you're at right now — that's what makes it verified.</div>
     </div>
     <div data-bs-scroll style="flex:1; overflow-y:auto; padding:16px 22px 20px">
-      <div style="display:flex; align-items:center; gap:10px; padding:13px 15px; border-radius:15px; background:#F1F7ED; border:1px solid #D9EBD0">
-        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#3D8B3D" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M20 6 9 17l-5-5"></path></svg>
-        <div style="font-size:12.5px; line-height:1.45; color:#2F6B2F"><span style="font-weight:700">GPS locked</span> — showing spots within 500 m of you.</div>
-      </div>
+      <sc-if value="{{ gpsOn }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex; align-items:center; gap:10px; padding:13px 15px; border-radius:15px; background:#F1F7ED; border:1px solid #D9EBD0">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#3D8B3D" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M20 6 9 17l-5-5"></path></svg>
+          <div style="font-size:12.5px; line-height:1.45; color:#2F6B2F"><span style="font-weight:700">GPS locked · ±{{ gpsAcc }} m</span> — nearest verified spots to you. You can only check in within 150 m.</div>
+        </div>
+      </sc-if>
+      <sc-if value="{{ gpsOff }}" hint-placeholder-val="{{ true }}">
+        <button onClick="{{ askLoc }}" style="display:flex; align-items:flex-start; gap:10px; width:100%; padding:13px 15px; border-radius:15px; background:#FEF6EE; border:1px solid #FADCC4; cursor:pointer; font-family:inherit; text-align:left">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#C25E10" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="flex:none; margin-top:1px"><polygon points="3 11 22 2 13 21 11 13 3 11"></polygon></svg>
+          <div style="font-size:12.5px; line-height:1.45; color:#9A4C0C"><span style="font-weight:700">Location is off</span> — distances below are estimates. Tap to turn GPS on so check-ins can be verified.</div>
+        </button>
+      </sc-if>
       <div style="margin-top:18px; display:flex; flex-direction:column; gap:10px">
         <sc-for list="{{ checkinRows }}" as="r" hint-placeholder-count="3">
-          <button onClick="{{ r.pick }}" style="display:flex; align-items:center; gap:13px; width:100%; padding:14px 15px; border:1px solid #E3EAF6; border-radius:16px; background:#fff; cursor:pointer; font-family:inherit; text-align:left" style-hover="border-color:#1B4BD2; background:#F9FBFE">
+          <button onClick="{{ r.pick }}" style="display:flex; align-items:center; gap:13px; width:100%; padding:14px 15px; border:1px solid {{ r.nearBd }}; border-radius:16px; background:{{ r.nearBg }}; cursor:pointer; font-family:inherit; text-align:left" style-hover="border-color:#1B4BD2">
             <div style="flex:none; width:46px; height:46px; border-radius:13px; background:repeating-linear-gradient(135deg,#E7EDF7 0 6px,#DFE7F4 6px 12px)"></div>
             <div style="flex:1">
               <div style="font-size:14.5px; font-weight:700; color:#14213D">{{ r.name }}</div>
               <div style="margin-top:2px; font-size:12.5px; color:#5A6B8C">{{ r.meta }} · {{ r.dist }}</div>
+              <div style="margin-top:3px; font-size:11.5px; font-weight:700; color:{{ r.badgeFg }}">{{ r.badge }}</div>
             </div>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#C2CCDC" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="m9 18 6-6-6-6"></path></svg>
           </button>
@@ -437,7 +450,8 @@ input::placeholder,textarea::placeholder{color:#93A3BF}
         <sc-for list="{{ savedSpots }}" as="s" hint-placeholder-count="0">
           <div onClick="{{ s.open }}" style="border-radius:18px; overflow:hidden; background:#fff; border:1px solid #E3EAF6; box-shadow:0 2px 8px rgba(20,33,61,.05); cursor:pointer; font-family:'Plus Jakarta Sans',system-ui,sans-serif" style-hover="border-color:#C9D6EE">
   <div style="position:relative; height:128px; background:repeating-linear-gradient(135deg,#E7EDF7 0 10px,#DFE7F4 10px 20px); display:flex; align-items:center; justify-content:center">
-    <span style="font-family:ui-monospace,Menlo,monospace; font-size:10.5px; letter-spacing:.4px; color:#8798B8; text-transform:uppercase">{{ s.slot }}</span>
+    <sc-if value="{{ s.noPhoto }}" hint-placeholder-val="{{ true }}"><span style="font-family:ui-monospace,Menlo,monospace; font-size:10.5px; letter-spacing:.4px; color:#8798B8; text-transform:uppercase">{{ s.slot }}</span></sc-if>
+    {{ s.photoEl }}
     <div style="position:absolute; top:11px; left:11px; display:flex; align-items:center; gap:5px; padding:5px 10px; border-radius:99px; background:rgba(255,255,255,.94); box-shadow:0 2px 6px rgba(20,33,61,.12)">
       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#1B4BD2" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg>
       <span style="font-size:11px; font-weight:700; color:#1B4BD2">{{ s.visits }} real visits</span>
@@ -582,7 +596,8 @@ input::placeholder,textarea::placeholder{color:#93A3BF}
           <sc-for list="{{ results }}" as="s" hint-placeholder-count="2">
             <div onClick="{{ s.open }}" style="border-radius:18px; overflow:hidden; background:#fff; border:1px solid #E3EAF6; box-shadow:0 2px 8px rgba(20,33,61,.05); cursor:pointer; font-family:'Plus Jakarta Sans',system-ui,sans-serif" style-hover="border-color:#C9D6EE">
   <div style="position:relative; height:128px; background:repeating-linear-gradient(135deg,#E7EDF7 0 10px,#DFE7F4 10px 20px); display:flex; align-items:center; justify-content:center">
-    <span style="font-family:ui-monospace,Menlo,monospace; font-size:10.5px; letter-spacing:.4px; color:#8798B8; text-transform:uppercase">{{ s.slot }}</span>
+    <sc-if value="{{ s.noPhoto }}" hint-placeholder-val="{{ true }}"><span style="font-family:ui-monospace,Menlo,monospace; font-size:10.5px; letter-spacing:.4px; color:#8798B8; text-transform:uppercase">{{ s.slot }}</span></sc-if>
+    {{ s.photoEl }}
     <div style="position:absolute; top:11px; left:11px; display:flex; align-items:center; gap:5px; padding:5px 10px; border-radius:99px; background:rgba(255,255,255,.94); box-shadow:0 2px 6px rgba(20,33,61,.12)">
       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#1B4BD2" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg>
       <span style="font-size:11px; font-weight:700; color:#1B4BD2">{{ s.visits }} real visits</span>
@@ -616,7 +631,8 @@ input::placeholder,textarea::placeholder{color:#93A3BF}
 <div data-screen-label="Spot detail" style="position:absolute; inset:0; z-index:20; background:#fff; display:flex; flex-direction:column; animation:bsPush .22s ease-out">
   <div data-bs-scroll style="flex:1; overflow-y:auto">
     <div style="position:relative; height:255px; background:repeating-linear-gradient(135deg,#E7EDF7 0 10px,#DFE7F4 10px 20px); display:flex; align-items:center; justify-content:center">
-      <span style="font-family:ui-monospace,Menlo,monospace; font-size:10.5px; letter-spacing:.4px; color:#8798B8; text-transform:uppercase">{{ spot.slot }}</span>
+      <sc-if value="{{ spot.noPhoto }}" hint-placeholder-val="{{ true }}"><span style="font-family:ui-monospace,Menlo,monospace; font-size:10.5px; letter-spacing:.4px; color:#8798B8; text-transform:uppercase">{{ spot.slot }}</span></sc-if>
+      {{ spot.photoEl }}
       <button onClick="{{ pop }}" style="position:absolute; top:{{ overlayTop }}px; left:16px; width:40px; height:40px; border:none; border-radius:50%; background:rgba(255,255,255,.94); display:flex; align-items:center; justify-content:center; cursor:pointer; color:#14213D; box-shadow:0 2px 8px rgba(20,33,61,.16)"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"></path></svg></button>
       <button onClick="{{ shareSpot }}" style="position:absolute; top:{{ overlayTop }}px; right:16px; width:40px; height:40px; border:none; border-radius:50%; background:rgba(255,255,255,.94); display:flex; align-items:center; justify-content:center; cursor:pointer; color:#14213D; box-shadow:0 2px 8px rgba(20,33,61,.16)"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path><polyline points="16 6 12 2 8 6"></polyline><line x1="12" x2="12" y1="2" y2="15"></line></svg></button>
       <div style="position:absolute; left:16px; bottom:16px; display:flex; align-items:center; gap:6px; padding:6px 12px; border-radius:99px; background:rgba(20,33,61,.85)">
@@ -715,7 +731,8 @@ input::placeholder,textarea::placeholder{color:#93A3BF}
       <sc-for list="{{ scoutSpots }}" as="s" hint-placeholder-count="2">
         <div onClick="{{ s.open }}" style="border-radius:18px; overflow:hidden; background:#fff; border:1px solid #E3EAF6; box-shadow:0 2px 8px rgba(20,33,61,.05); cursor:pointer; font-family:'Plus Jakarta Sans',system-ui,sans-serif" style-hover="border-color:#C9D6EE">
   <div style="position:relative; height:128px; background:repeating-linear-gradient(135deg,#E7EDF7 0 10px,#DFE7F4 10px 20px); display:flex; align-items:center; justify-content:center">
-    <span style="font-family:ui-monospace,Menlo,monospace; font-size:10.5px; letter-spacing:.4px; color:#8798B8; text-transform:uppercase">{{ s.slot }}</span>
+    <sc-if value="{{ s.noPhoto }}" hint-placeholder-val="{{ true }}"><span style="font-family:ui-monospace,Menlo,monospace; font-size:10.5px; letter-spacing:.4px; color:#8798B8; text-transform:uppercase">{{ s.slot }}</span></sc-if>
+    {{ s.photoEl }}
     <div style="position:absolute; top:11px; left:11px; display:flex; align-items:center; gap:5px; padding:5px 10px; border-radius:99px; background:rgba(255,255,255,.94); box-shadow:0 2px 6px rgba(20,33,61,.12)">
       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#1B4BD2" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg>
       <span style="font-size:11px; font-weight:700; color:#1B4BD2">{{ s.visits }} real visits</span>
@@ -789,7 +806,8 @@ input::placeholder,textarea::placeholder{color:#93A3BF}
       <sc-for list="{{ listSpots }}" as="s" hint-placeholder-count="2">
         <div onClick="{{ s.open }}" style="border-radius:18px; overflow:hidden; background:#fff; border:1px solid #E3EAF6; box-shadow:0 2px 8px rgba(20,33,61,.05); cursor:pointer; font-family:'Plus Jakarta Sans',system-ui,sans-serif" style-hover="border-color:#C9D6EE">
   <div style="position:relative; height:128px; background:repeating-linear-gradient(135deg,#E7EDF7 0 10px,#DFE7F4 10px 20px); display:flex; align-items:center; justify-content:center">
-    <span style="font-family:ui-monospace,Menlo,monospace; font-size:10.5px; letter-spacing:.4px; color:#8798B8; text-transform:uppercase">{{ s.slot }}</span>
+    <sc-if value="{{ s.noPhoto }}" hint-placeholder-val="{{ true }}"><span style="font-family:ui-monospace,Menlo,monospace; font-size:10.5px; letter-spacing:.4px; color:#8798B8; text-transform:uppercase">{{ s.slot }}</span></sc-if>
+    {{ s.photoEl }}
     <div style="position:absolute; top:11px; left:11px; display:flex; align-items:center; gap:5px; padding:5px 10px; border-radius:99px; background:rgba(255,255,255,.94); box-shadow:0 2px 6px rgba(20,33,61,.12)">
       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#1B4BD2" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg>
       <span style="font-size:11px; font-weight:700; color:#1B4BD2">{{ s.visits }} real visits</span>
@@ -855,6 +873,15 @@ input::placeholder,textarea::placeholder{color:#93A3BF}
         <span style="flex:1; font-size:14px; font-weight:600; color:#14213D">Install biteScout on this phone</span>
         <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#C2CCDC" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg>
       </button>
+      <button onClick="{{ openCfg }}" style="display:flex; align-items:center; gap:12px; padding:15px; border:none; background:#fff; cursor:pointer; font-family:inherit; text-align:left" style-hover="background:#F9FBFE">
+        <div style="flex:none; width:10px; height:10px; border-radius:50%; background:{{ cloudDot }}"></div>
+        <div style="flex:1"><div style="font-size:14px; font-weight:600; color:#14213D">{{ cloudLabel }}</div><div style="margin-top:2px; font-size:12px; line-height:1.4; color:#93A3BF">{{ cloudNote }}</div></div>
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#C2CCDC" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="m9 18 6-6-6-6"></path></svg>
+      </button>
+      <button onClick="{{ resetData }}" style="display:flex; align-items:center; gap:12px; padding:15px; border:none; background:#fff; cursor:pointer; font-family:inherit; text-align:left" style-hover="background:#F9FBFE">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#5A6B8C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M3 12a9 9 0 1 0 9-9 9 9 0 0 0-6.36 2.64L3 8"></path><path d="M3 3v5h5"></path></svg>
+        <span style="flex:1; font-size:14px; font-weight:600; color:#14213D">Reset prototype data</span>
+      </button>
       <button onClick="{{ signOut }}" style="display:flex; align-items:center; gap:12px; padding:15px; border:none; background:#fff; cursor:pointer; font-family:inherit; text-align:left" style-hover="background:#FFF6F6">
         <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#E5484D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="m16 17 5-5-5-5"></path><path d="M21 12H9"></path><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path></svg>
         <span style="flex:1; font-size:14px; font-weight:600; color:#E5484D">Sign out</span>
@@ -877,10 +904,18 @@ input::placeholder,textarea::placeholder{color:#93A3BF}
       <div style="width:44px"></div>
     </div>
     <div data-bs-scroll style="flex:1; overflow-y:auto; padding:10px 22px 0">
-      <div style="display:flex; align-items:center; gap:10px; padding:13px 15px; border-radius:15px; background:#F1F7ED; border:1px solid #D9EBD0">
-        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#3D8B3D" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M20 6 9 17l-5-5"></path></svg>
-        <div style="font-size:12.5px; line-height:1.45; color:#2F6B2F"><span style="font-weight:700">GPS confirmed</span> — you're at {{ ciSpotName }} right now.</div>
-      </div>
+      <sc-if value="{{ ciNear }}" hint-placeholder-val="{{ true }}">
+        <div style="display:flex; align-items:center; gap:10px; padding:13px 15px; border-radius:15px; background:#F1F7ED; border:1px solid #D9EBD0">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#3D8B3D" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M20 6 9 17l-5-5"></path></svg>
+          <div style="font-size:12.5px; line-height:1.45; color:#2F6B2F"><span style="font-weight:700">GPS confirmed</span> — you're at {{ ciSpotName }} ({{ ciDistLabel }} away).</div>
+        </div>
+      </sc-if>
+      <sc-if value="{{ ciFar }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex; align-items:flex-start; gap:10px; padding:13px 15px; border-radius:15px; background:#FFF4F4; border:1px solid #F6D9DA">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#C1373C" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="flex:none; margin-top:1px"><circle cx="12" cy="12" r="10"></circle><path d="M12 8v4"></path><path d="M12 16h.01"></path></svg>
+          <div style="font-size:12.5px; line-height:1.45; color:#A32E33">You're <span style="font-weight:700">{{ ciDistLabel }}</span> from {{ ciSpotName }}. Check-ins only count within 150 m — that's the rule that keeps recs real.</div>
+        </div>
+      </sc-if>
       <div style="margin-top:20px; font-size:14.5px; font-weight:700; color:#14213D">Add a photo</div>
       <div style="margin-top:4px; font-size:12.5px; color:#93A3BF">Required — it's what keeps recs honest.</div>
       <button onClick="{{ togglePhoto }}" style="margin-top:11px; width:100%; height:150px; border-radius:16px; cursor:pointer; font-family:inherit; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; border:1.5px dashed {{ photoBd }}; background:{{ photoBg }}">
@@ -888,9 +923,7 @@ input::placeholder,textarea::placeholder{color:#93A3BF}
           <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#93A3BF" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"></path><circle cx="12" cy="13" r="3"></circle></svg>
           <span style="font-size:13.5px; font-weight:600; color:#5A6B8C">Take a photo</span>
         </sc-if>
-        <sc-if value="{{ hasPhoto }}" hint-placeholder-val="{{ false }}">
-          <span style="font-family:ui-monospace,Menlo,monospace; font-size:10.5px; letter-spacing:.4px; color:#8798B8; text-transform:uppercase">photo attached — tap to remove</span>
-        </sc-if>
+        {{ ciPhotoEl }}
       </button>
       <div style="margin-top:22px; font-size:14.5px; font-weight:700; color:#14213D">Would you go again?</div>
       <div style="margin-top:11px; display:flex; gap:9px">
@@ -907,7 +940,7 @@ input::placeholder,textarea::placeholder{color:#93A3BF}
     </div>
     <div style="flex:none; padding:12px 22px 26px; background:#fff; border-top:1px solid #E9F0FB">
       <button onClick="{{ submitCheckIn }}" style="width:100%; display:flex; align-items:center; justify-content:center; gap:9px; height:54px; border:none; border-radius:16px; cursor:pointer; font-family:inherit; font-size:16px; font-weight:700; background:{{ ciBtnBg }}; color:{{ ciBtnFg }}"><span>Post check-in</span></button>
-      <sc-if value="{{ ciIncomplete }}" hint-placeholder-val="{{ true }}"><div style="margin-top:9px; text-align:center; font-size:12px; color:#93A3BF">Add a photo and a verdict to post.</div></sc-if>
+      <sc-if value="{{ ciIncomplete }}" hint-placeholder-val="{{ true }}"><div style="margin-top:9px; text-align:center; font-size:12px; color:#93A3BF">A photo, a verdict, and standing within 150 m.</div></sc-if>
     </div>
   </sc-if>
   <sc-if value="{{ ciDone }}" hint-placeholder-val="{{ false }}">
@@ -966,9 +999,7 @@ input::placeholder,textarea::placeholder{color:#93A3BF}
           <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#93A3BF" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"></path><circle cx="12" cy="13" r="3"></circle></svg>
           <span style="font-size:13.5px; font-weight:600; color:#5A6B8C">Take a photo</span>
         </sc-if>
-        <sc-if value="{{ npHasPhoto }}" hint-placeholder-val="{{ false }}">
-          <span style="font-family:ui-monospace,Menlo,monospace; font-size:10.5px; letter-spacing:.4px; color:#8798B8; text-transform:uppercase">photo attached — tap to remove</span>
-        </sc-if>
+        {{ npPhotoEl }}
       </button>
       <div style="margin-top:16px; display:flex; align-items:flex-start; gap:8px; padding:0 4px 20px">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#93A3BF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex:none; margin-top:2px"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4"></path><path d="M12 8h.01"></path></svg>
@@ -1070,6 +1101,26 @@ input::placeholder,textarea::placeholder{color:#93A3BF}
 </div>
 </sc-if>
 
+<!-- ── Sheet: connect Firebase ── -->
+<sc-if value="{{ cfgOpen }}" hint-placeholder-val="{{ false }}">
+<div style="position:absolute; inset:0; z-index:45; background:rgba(10,18,38,.45); display:flex; align-items:flex-end">
+  <div style="width:100%; padding:20px 22px 32px; border-radius:24px 24px 0 0; background:#fff; animation:bsSheet .26s cubic-bezier(.22,.9,.3,1)">
+    <div style="width:38px; height:4px; margin:0 auto 16px; border-radius:99px; background:#DCE5F2"></div>
+    <div style="font-size:17px; font-weight:800; color:#14213D">Connect Firebase</div>
+    <div style="margin-top:6px; font-size:12.5px; line-height:1.5; color:#5A6B8C">Firebase console → your project → <span style="font-weight:700">Project settings</span> → scroll to <span style="font-weight:700">Your apps</span> → the web app's <span style="font-weight:700">SDK setup and configuration</span>. Copy the whole <span style="font-family:ui-monospace,Menlo,monospace">firebaseConfig</span> block and paste it here.</div>
+    <textarea placeholder="{ apiKey: &quot;AIza…&quot;, authDomain: &quot;bitescout.firebaseapp.com&quot;, projectId: &quot;bitescout&quot;, … }" value="{{ cfgText }}" onChange="{{ cfgChange }}" style="margin-top:12px; width:100%; box-sizing:border-box; height:120px; padding:13px 15px; border:1.5px solid #DCE5F2; border-radius:15px; background:#F9FBFE; font-family:ui-monospace,Menlo,monospace; font-size:12px; line-height:1.5; color:#14213D; resize:none; outline:none" style-focus="border-color:#1B4BD2; background:#fff"></textarea>
+    <sc-if value="{{ hasCfgErr }}" hint-placeholder-val="{{ false }}"><div style="margin-top:8px; font-size:12.5px; font-weight:600; color:#E5484D">{{ cfgErr }}</div></sc-if>
+    <div style="margin-top:14px; display:flex; gap:10px">
+      <button onClick="{{ closeSheets }}" style="flex:1; height:52px; border:1.5px solid #DCE5F2; border-radius:15px; background:#fff; font-family:inherit; font-size:14.5px; font-weight:700; color:#5A6B8C; cursor:pointer">Cancel</button>
+      <button onClick="{{ saveCfg }}" style="flex:1.4; height:52px; border:none; border-radius:15px; background:#1B4BD2; color:#fff; font-family:inherit; font-size:14.5px; font-weight:700; cursor:pointer">Connect</button>
+    </div>
+    <sc-if value="{{ cloudOn }}" hint-placeholder-val="{{ false }}">
+      <button onClick="{{ disconnectCloud }}" style="margin-top:8px; width:100%; height:44px; border:none; background:none; font-family:inherit; font-size:13.5px; font-weight:600; color:#E5484D; cursor:pointer">Disconnect Firebase</button>
+    </sc-if>
+  </div>
+</div>
+</sc-if>
+
 <!-- ── Sheet: city picker ── -->
 <sc-if value="{{ cityPickerOpen }}" hint-placeholder-val="{{ false }}">
 <div style="position:absolute; inset:0; z-index:40; background:rgba(10,18,38,.4); display:flex; align-items:flex-end">
@@ -1123,17 +1174,13 @@ class Component extends DCLogic {
   state = {
     platform: 'android', phase: 'onboard',
     ob: 0, loc: 'idle', dlg: false, email: '', emailErr: false, auth: 'form', gLoading: false,
-    tab: 0, stack: [], city: 'KL', chip: 0, nearbyMode: 'map', pin: 's1',
-    query: '', recent: ['nasi lemak', 'kopitiam bangsar', 'char kuey teow'],
-    saved: {}, bump: {}, following: { f1: true, f2: true, f3: true, f4: false, f5: false },
-    ci: null, ciPhoto: false, ciVerdict: null, ciNote: '', ciDone: false,
+    tab: 0, stack: [], city: 'near', chip: 0, nearbyMode: 'map', pin: null,
+    query: '', recent: ['nasi lemak', 'kopitiam', 'char kuey teow'],
+    ci: null, ciPhoto: null, ciVerdict: null, ciNote: '', ciDone: false,
+    np: { name: '', cuisine: null, price: null, halal: null, photo: null }, addDone: false, newId: null,
+    newListOpen: false, nlName: '', nlPriv: 0, addSpotsOpen: false, draft: '',
     toast: '', notifsRead: false, cityPicker: false, install: false, installSeen: false,
-    settings: { loc: true, push: false, halal: false },
-    extraSpots: [], extraLists: [], listAdd: {},
-    np: { name: '', cuisine: null, price: null, halal: null, photo: false }, addDone: false, newId: null,
-    newListOpen: false, nlName: '', nlPriv: 0, addSpotsOpen: false,
-    msgs: {}, draft: '',
-    myVisits: 12, streak: 4,
+    cfgOpen: false, cfgText: '', cfgErr: '',
   };
 
   TABS = [
@@ -1148,28 +1195,17 @@ class Component extends DCLogic {
     { label: 'Open now', test: s => s.open },
     { label: 'Halal', test: s => s.halal === 'Certified' },
     { label: 'Under RM15', test: s => s.priceNum < 15 },
-    { label: 'Kopitiam', test: s => /kopitiam|coffee/i.test(s.cuisine) },
+    { label: 'Walkable', test: s => { const d = BS.distanceTo(s); return d !== null && d < 1400; } },
   ];
   VERDICTS = [
     { label: 'Definitely', d1: 'M7 10v12', d2: 'M15 5.88 14 10h5.83a2 2 0 0 1 1.92 2.56l-2.33 8A2 2 0 0 1 17.5 22H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2.76a2 2 0 0 0 1.79-1.11L12 2a3.13 3.13 0 0 1 3 3.88Z' },
     { label: 'Maybe', d1: 'M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z', d2: 'M8 12h8' },
     { label: 'Nope', d1: 'M17 14V2', d2: 'M9 18.12 10 14H4.17a2 2 0 0 1-1.92-2.56l2.33-8A2 2 0 0 1 6.5 2H20a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-2.76a2 2 0 0 0-1.79 1.11L12 22a3.13 3.13 0 0 1-3-3.88Z' },
   ];
-  CITIES = [
-    { code: 'KL', label: 'Kuala Lumpur', short: 'KL', area: 'Bangsar, Kuala Lumpur' },
-    { code: 'PG', label: 'Penang', short: 'Penang', area: 'Georgetown, Penang' },
-    { code: 'JB', label: 'Johor Bahru', short: 'JB', area: 'Taman Sentosa, JB' },
-  ];
-  SPOTS = [
-    { id: 's1', city: 'KL', name: 'Warung Pak Din', cuisine: 'Nasi lemak', priceNum: 8, area: 'Bangsar', dist: '250 m', km: .25, walk: 'walk 4 min', visits: 42, again: 94, halal: 'Certified', hours: '7:00 – 14:30', open: true, slot: 'photo — nasi lemak plate', who: 'Aisyah', initials: 'AR', avBg: '#1B4BD2', quote: 'checked in twice this week — sambal is no joke.', tags: ['Cash only', 'Breakfast', 'Standing tables'] },
-    { id: 's2', city: 'KL', name: 'Kopi & Kaya House', cuisine: 'Kopitiam', priceNum: 12, area: 'Jalan Telawi', dist: '480 m', km: .48, walk: 'walk 7 min', visits: 27, again: 88, halal: 'Pork-free', hours: '7:30 – 18:00', open: true, slot: 'photo — kopitiam interior', who: 'Wei Jun', initials: 'WJ', avBg: '#2E8FE0', quote: 'quiet before 9am, best kaya toast around.', tags: ['Wifi', 'Aircon', 'Card ok'] },
-    { id: 's3', city: 'KL', name: 'Roti Canai SS15', cuisine: 'Mamak', priceNum: 6, area: 'Subang', dist: '1.2 km', km: 1.2, walk: 'drive 6 min', visits: 68, again: 97, halal: 'Certified', hours: 'Open 24 hours', open: true, slot: 'photo — roti canai on griddle', who: 'Daniel', initials: 'DL', avBg: '#F97A1F', quote: 'worth the drive, tarik is properly pulled.', tags: ['Late night', 'Halal', 'Outdoor'] },
-    { id: 's4', city: 'KL', name: 'Sate Kajang Corner', cuisine: 'Satay', priceNum: 18, area: 'Kajang', dist: '4.5 km', km: 4.5, walk: 'drive 14 min', visits: 51, again: 91, halal: 'Certified', hours: '17:00 – 23:00', open: false, slot: 'photo — satay over charcoal', who: 'Farid', initials: 'FZ', avBg: '#1B4BD2', quote: 'go at 6pm before the queue builds.', tags: ['Dinner', 'Halal', 'Family'] },
-    { id: 's5', city: 'KL', name: 'CKT Ah Leng', cuisine: 'Noodles', priceNum: 11, area: 'Pudu', dist: '2.1 km', km: 2.1, walk: 'drive 9 min', visits: 34, again: 89, halal: 'Pork-free', hours: '8:00 – 13:00', open: true, slot: 'photo — wok-fried kuey teow', who: 'Mei Ling', initials: 'ML', avBg: '#F97A1F', quote: 'ask for extra wok hei, he gets it.', tags: ['Cash only', 'Breakfast', 'Queue'] },
-    { id: 's6', city: 'PG', name: 'Lorong Selamat CKT', cuisine: 'Noodles', priceNum: 15, area: 'Georgetown', dist: '600 m', km: .6, walk: 'walk 8 min', visits: 121, again: 96, halal: 'Pork-free', hours: '11:00 – 18:00', open: true, slot: 'photo — char kuey teow closeup', who: 'Priya', initials: 'PK', avBg: '#2E8FE0', quote: 'prawns are huge, worth the 20 min wait.', tags: ['Cash only', 'Lunch', 'Queue'] },
-    { id: 's7', city: 'PG', name: 'Nasi Kandar Beratur', cuisine: 'Nasi kandar', priceNum: 14, area: 'Georgetown', dist: '1.1 km', km: 1.1, walk: 'walk 14 min', visits: 240, again: 93, halal: 'Certified', hours: '22:00 – 07:00', open: false, slot: 'photo — nasi kandar counter', who: 'Hakim', initials: 'HN', avBg: '#1B4BD2', quote: 'queue is the point. Ayam goreng, always.', tags: ['Late night', 'Halal', 'Queue'] },
-    { id: 's8', city: 'JB', name: 'Kacang Pool Haji', cuisine: 'Breakfast', priceNum: 9, area: 'Larkin', dist: '900 m', km: .9, walk: 'walk 12 min', visits: 87, again: 92, halal: 'Certified', hours: '7:00 – 12:00', open: true, slot: 'photo — kacang pool with egg', who: 'Nurul', initials: 'NA', avBg: '#F97A1F', quote: 'the JB breakfast. Add the egg, no debate.', tags: ['Breakfast', 'Halal', 'Cash only'] },
-    { id: 's9', city: 'JB', name: 'Restoran Ah Chuan', cuisine: 'Bak kut teh', priceNum: 20, area: 'Taman Sentosa', dist: '1.6 km', km: 1.6, walk: 'drive 7 min', visits: 63, again: 90, halal: 'Non-halal', hours: '8:00 – 15:00', open: true, slot: 'photo — claypot bak kut teh', who: 'Kevin', initials: 'KT', avBg: '#2E8FE0', quote: 'peppery broth, refills are free.', tags: ['Aircon', 'Lunch', 'Card ok'] },
+  REGIONS = [
+    { code: 'near', label: 'Near me' },
+    { code: 'PG', label: 'Penang' },
+    { code: 'JB', label: 'Johor Bahru' },
   ];
   SCOUTS = [
     { id: 'f1', name: 'Aisyah Rahman', first: 'Aisyah', initials: 'AR', avBg: '#1B4BD2', bio: 'Bangsar · breakfast specialist', visits: 64, agree: 91, lists: 5, spots: ['s1', 's5'] },
@@ -1179,21 +1215,15 @@ class Component extends DCLogic {
     { id: 'f5', name: 'Nurul Aina', first: 'Nurul', initials: 'NA', avBg: '#F97A1F', bio: 'JB · kacang pool loyalist', visits: 57, agree: 82, lists: 4, spots: ['s8'] },
   ];
   LISTS = [
-    { id: 'l1', name: 'Want to try', note: 'Private', spots: ['s4', 's6', 's7'] },
-    { id: 'l2', name: 'Kopitiam runs', note: 'Shared with 3 friends', spots: ['s2', 's9'] },
-    { id: 'l3', name: 'Best of Penang', note: 'Public list', spots: ['s6', 's7'] },
+    { id: 'l1', name: 'Want to try', note: 'Private', spots: ['s4', 's6'] },
+    { id: 'l2', name: 'Kopitiam runs', note: 'Shared with 3 friends', spots: ['s2'] },
   ];
   NOTIFS = [
-    { id: 'n1', who: 'Aisyah', initials: 'AR', avBg: '#1B4BD2', text: 'checked in at Warung Pak Din — 250 m from you.', when: '12 min ago', spot: 's1' },
+    { id: 'n1', who: 'Aisyah', initials: 'AR', avBg: '#1B4BD2', text: 'checked in at Warung Pak Din — a few minutes from you.', when: '12 min ago', spot: 's1' },
     { id: 'n2', who: 'Priya', initials: 'PK', avBg: '#2E8FE0', text: 'added Lorong Selamat CKT to Best of Penang.', when: '2 h ago', spot: 's6' },
     { id: 'n3', who: 'Wei Jun', initials: 'WJ', avBg: '#2E8FE0', text: 'agreed with your take on Kopi & Kaya House.', when: 'Yesterday', spot: 's2' },
     { id: 'n4', who: 'Daniel', initials: 'DL', avBg: '#F97A1F', text: 'started following you.', when: '2 d ago', spot: 's3' },
     { id: 'n5', who: 'Nurul', initials: 'NA', avBg: '#F97A1F', text: 'checked in at Kacang Pool Haji — would go again.', when: '3 d ago', spot: 's8' },
-  ];
-  MINE = [
-    { spot: 's3', when: '2 days ago', verdict: 'Would go again' },
-    { spot: 's1', when: 'Last week', verdict: 'Would go again' },
-    { spot: 's5', when: '2 weeks ago', verdict: 'Maybe' },
   ];
   FACTS_ICONS = [
     { key: 'hours', label: 'Opens', d1: 'M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z', d2: 'M12 6v6l4 2' },
@@ -1201,65 +1231,94 @@ class Component extends DCLogic {
     { key: 'halal', label: 'Halal', d1: 'M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z', d2: 'm9 12 2 2 4-4' },
   ];
 
-  componentDidMount() { this.applyProps(); }
-  componentDidUpdate(pp) {
-    if (!pp) return;
-    if (pp.startPhase !== this.props.startPhase || pp.startTab !== this.props.startTab || pp.seedSaved !== this.props.seedSaved) this.applyProps();
+  componentDidMount() {
+    this._un = BS.onChange(() => this.forceUpdate());
+    BS.start();
+    BS.completeEmailLink().then(ok => { if (ok) this.setState({ phase: 'app' }); });
+    this.applyProps();
   }
+  componentDidUpdate(pp) {
+    if (pp && (pp.startPhase !== this.props.startPhase || pp.startTab !== this.props.startTab)) this.applyProps();
+  }
+  componentWillUnmount() { if (this._un) this._un(); clearTimeout(this._t); clearTimeout(this._g); clearTimeout(this._toast); }
   applyProps() {
     const p = this.props, next = {};
     if (p.startPhase) next.phase = p.startPhase === 'App' ? 'app' : 'onboard';
     const tabs = ['Home', 'Nearby', 'Check in', 'Saved', 'Me'];
     if (p.startTab && tabs.indexOf(p.startTab) > -1) next.tab = tabs.indexOf(p.startTab);
-    if (p.seedSaved) next.saved = { s1: true, s3: true, s6: true };
-    else if (p.seedSaved === false) next.saved = {};
     next.stack = [];
     this.setState(next);
   }
-  componentWillUnmount() { clearTimeout(this._t); clearTimeout(this._g); clearTimeout(this._toast); }
   flash(t) { this.setState({ toast: t }); clearTimeout(this._toast); this._toast = setTimeout(() => this.setState({ toast: '' }), 1900); }
-  visits(id) { const s = this.find(id); return s ? s.visits + (this.state.bump[id] || 0) : 0; }
-  all() { return this.SPOTS.concat(this.state.extraSpots); }
+
+  all() { return BS.store.spots; }
   find(id) { return this.all().find(s => s.id === id); }
-  allLists() { return this.LISTS.concat(this.state.extraLists); }
-  listItems(l) { return (l.spots || []).concat(this.state.listAdd[l.id] || []); }
+  allLists() { return this.LISTS.concat(BS.store.lists); }
+  listItems(l) { return (l.spots || []).concat(BS.store.listAdd[l.id] || []); }
   meta(s) { return s.cuisine + ' · RM' + s.priceNum + ' · ' + s.area; }
+  region(s) {
+    const d = BS.distanceTo(s);
+    if (d !== null && d < 30000) return 'near';
+    if (s.lat > 4.5) return 'PG';
+    if (s.lat < 2.2) return 'JB';
+    return 'near';
+  }
+  inRegion(code) {
+    return this.all().filter(s => this.region(s) === code)
+      .sort((a, b) => (BS.distanceTo(a) ?? 9e9) - (BS.distanceTo(b) ?? 9e9));
+  }
   card(s) {
-    const S = this.state;
-    return { ...s, visits: this.visits(s.id), meta: this.meta(s),
-      heartFill: S.saved[s.id] ? '#F97A1F' : 'none', heartStroke: S.saved[s.id] ? '#F97A1F' : '#5A6B8C',
+    const d = BS.distanceTo(s), saved = BS.store.saved[s.id], photo = BS.photoFor(s.id);
+    return { ...s, visits: BS.visitsFor(s.id), meta: this.meta(s),
+      dist: BS.fmtDist(d), walk: BS.fmtWalk(d),
+      photoEl: photo ? React.createElement('img', { src: photo, alt: '', style: { position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' } }) : null, hasPhoto: !!photo, noPhoto: !photo,
+      heartFill: saved ? '#F97A1F' : 'none', heartStroke: saved ? '#F97A1F' : '#5A6B8C',
       open: () => this.push('spot', s.id),
       save: e => { if (e && e.stopPropagation) e.stopPropagation(); this.toggleSave(s.id); } };
   }
   toggleSave(id) {
-    const on = !this.state.saved[id];
-    this.setState(p => ({ saved: { ...p.saved, [id]: on } }));
-    const s = this.find(id);
+    const on = BS.toggleSave(id), s = this.find(id);
     this.flash(on ? 'Saved ' + s.name : 'Removed from saved');
   }
   push(p, id) { this.setState(s => ({ stack: [...s.stack, { p, id }], cityPicker: false, install: false })); }
   pop() { this.setState(s => ({ stack: s.stack.slice(0, -1) })); }
-  cityOf(code) { return this.CITIES.find(c => c.code === code) || this.CITIES[0]; }
-  inCity(code) { return this.all().filter(s => s.city === code).sort((a, b) => a.km - b.km); }
+  ago(iso) {
+    const m = Math.round((Date.now() - new Date(iso).getTime()) / 60000);
+    if (m < 1) return 'just now';
+    if (m < 60) return m + ' min ago';
+    if (m < 1440) return Math.round(m / 60) + ' h ago';
+    const d = Math.round(m / 1440);
+    return d === 1 ? 'yesterday' : d + ' days ago';
+  }
+  streak() {
+    const days = new Set(BS.store.checkins.map(c => new Date(c.createdAt).toDateString()));
+    let n = 0, cur = new Date();
+    while (days.has(cur.toDateString())) { n++; cur.setDate(cur.getDate() - 1); }
+    return n;
+  }
 
   renderVals() {
-    const S = this.state, ios = S.platform === 'ios';
+    const S = this.state, ST = BS.store, ios = S.platform === 'ios';
     const top = S.stack[S.stack.length - 1] || {};
-    const city = this.cityOf(S.city);
-    const citySpots = this.inCity(S.city);
+    const regionSpots = this.inRegion(S.city);
     const chip = this.CHIPS[S.chip];
-    const feed = citySpots.filter(chip.test);
-    const spotId = top.p === 'spot' ? top.id : S.ci || 's1';
-    const spotRaw = this.find(spotId) || this.SPOTS[0];
+    const feed = regionSpots.filter(chip.test);
+    const pinId = S.pin || (regionSpots[0] && regionSpots[0].id);
+    const spotId = top.p === 'spot' ? top.id : (S.ci || pinId);
+    const spotRaw = this.find(spotId) || this.all()[0] || {};
     const scoutRaw = this.SCOUTS.find(s => s.id === top.id) || this.SCOUTS[0];
     const listRaw = this.allLists().find(l => l.id === top.id) || this.LISTS[0];
     const q = S.query.trim().toLowerCase();
-    const results = q ? this.all().filter(s => (s.name + ' ' + s.cuisine + ' ' + s.area + ' ' + this.cityOf(s.city).label).toLowerCase().includes(q)) : [];
-    const savedIds = Object.keys(S.saved).filter(k => S.saved[k]);
-    const ciReady = S.ciPhoto && S.ciVerdict !== null;
-    const npReady = !!(S.np.name.trim() && S.np.cuisine && S.np.photo);
+    const results = q ? this.all().filter(s => (s.name + ' ' + s.cuisine + ' ' + s.area).toLowerCase().includes(q)) : [];
+    const savedIds = Object.keys(ST.saved).filter(k => ST.saved[k] && this.find(k));
     const ciSpot = this.find(S.ci) || spotRaw;
-    const visitorsOf = id => this.SCOUTS.filter(f => f.spots.includes(id)).concat(this.SCOUTS.slice(0, 3)).slice(0, 3);
+    const ciDist = BS.distanceTo(ciSpot);
+    const ciNear = ciDist === null ? true : ciDist <= BS.RADIUS;
+    const ciReady = !!S.ciPhoto && S.ciVerdict !== null && ciNear;
+    const npReady = !!(S.np.name.trim() && S.np.cuisine && S.np.photo);
+    const me = ST.user || { name: 'You', initials: 'ME', email: 'not signed in' };
+    const myCi = BS.myCheckins();
+    const gpsOn = !!BS.geo.pos;
 
     return {
       ios, android: !ios, frameName: ios ? 'IOSDevice' : 'AndroidDevice',
@@ -1270,7 +1329,7 @@ class Component extends DCLogic {
       pickAndroid: () => this.setState({ platform: 'android' }),
       obTabBg: S.phase === 'onboard' ? '#1B4BD2' : 'transparent', obTabFg: S.phase === 'onboard' ? '#fff' : '#5A6B8C',
       appTabBg: S.phase === 'app' ? '#1B4BD2' : 'transparent', appTabFg: S.phase === 'app' ? '#fff' : '#5A6B8C',
-      showOnboard: () => this.setState({ phase: 'onboard', ob: 0, loc: 'idle', auth: 'form', email: '', stack: [] }),
+      showOnboard: () => this.setState({ phase: 'onboard', ob: 0, auth: 'form', stack: [] }),
       showApp: () => this.setState({ phase: 'app', stack: [] }),
       onboarding: S.phase === 'onboard', inApp: S.phase === 'app',
       obX: S.ob * -25,
@@ -1278,17 +1337,23 @@ class Component extends DCLogic {
       obNext: () => this.setState(p => ({ ob: Math.min(3, p.ob + 1) })),
       obBack: () => this.setState(p => ({ ob: Math.max(0, p.ob - 1) })),
       skipToAuth: () => this.setState({ ob: 3 }),
-      locIdle: S.loc === 'idle', locGranted: S.loc === 'granted', locDenied: S.loc === 'denied', dlg: S.dlg,
-      askLoc: () => this.setState({ dlg: true }),
-      allowLoc: () => { this.setState({ dlg: false, loc: 'granted' }); clearTimeout(this._t); this._t = setTimeout(() => this.setState({ ob: 3 }), 900); },
-      denyLoc: () => this.setState({ dlg: false, loc: 'denied' }),
+      locIdle: !gpsOn && BS.geo.error !== 'denied', locGranted: gpsOn, locDenied: BS.geo.error === 'denied',
+      dlg: S.dlg,
+      askLoc: () => { BS.requestGeo().then(pos => { if (pos) { this.flash('Location on'); clearTimeout(this._t); this._t = setTimeout(() => this.setState({ ob: 3 }), 700); } }); },
+      allowLoc: () => this.setState({ dlg: false }),
+      denyLoc: () => this.setState({ dlg: false }),
       email: S.email, emailErr: S.emailErr, emailBorder: S.emailErr ? '#E5484D' : '#DCE5F2',
       emailChange: e => this.setState({ email: e.target.value, emailErr: false }),
       emailKey: e => { if (e.key === 'Enter') this.submitEmail(); },
       emailSubmit: () => this.submitEmail(),
       authForm: S.auth === 'form', authSent: S.auth === 'sent',
       gIdle: !S.gLoading, gLoading: S.gLoading,
-      googleSignIn: () => { if (S.gLoading) return; this.setState({ gLoading: true }); clearTimeout(this._g); this._g = setTimeout(() => this.setState({ gLoading: false, phase: 'app', install: !this.state.installSeen, installSeen: true }), 900); },
+      googleSignIn: () => {
+        if (S.gLoading) return;
+        this.setState({ gLoading: true });
+        BS.signInGoogle().then(() => this.setState({ gLoading: false, phase: 'app', install: !S.installSeen, installSeen: true }))
+          .catch(() => this.setState({ gLoading: false }));
+      },
       otherEmail: () => this.setState({ auth: 'form' }),
       enterApp: () => this.setState({ phase: 'app', install: !S.installSeen, installSeen: true }),
 
@@ -1300,43 +1365,185 @@ class Component extends DCLogic {
       openCheckinTab: () => this.setState({ tab: 2, stack: [] }),
       openMeTab: () => this.setState({ tab: 4, stack: [] }),
 
-      user: { name: 'Amir Faizal', first: 'Amir', initials: 'AF', email: 'amir.f@gmail.com', level: 'Scout · Level 2',
-        city: city.label, visits: S.myVisits, streak: S.streak, following: Object.values(S.following).filter(Boolean).length + 21,
-        nextLevel: 'Next: Trusted Scout', toNext: Math.max(0, 20 - S.myVisits), progress: Math.min(100, Math.round(S.myVisits / 20 * 100)) },
-      cityLabel: city.area, cityShort: city.short, verifiedCount: citySpots.length * 14 + 6,
+      user: { name: me.name, first: me.name.split(' ')[0], initials: me.initials, email: me.email,
+        level: myCi.length >= 20 ? 'Trusted Scout' : 'Scout · Level ' + (1 + Math.floor(myCi.length / 5)),
+        city: gpsOn ? 'Located' : 'Location off', visits: myCi.length, streak: this.streak(),
+        following: Object.keys(ST.following).filter(k => ST.following[k]).length,
+        nextLevel: 'Next: Trusted Scout', toNext: Math.max(0, 20 - myCi.length),
+        progress: Math.min(100, Math.round(myCi.length / 20 * 100)) },
+      cityLabel: gpsOn ? 'Near you · ±' + BS.geo.accuracy + ' m' : (BS.geo.error === 'denied' ? 'Location off — tap to fix' : 'Finding you…'),
+      cityShort: (this.REGIONS.find(r => r.code === S.city) || {}).label,
+      gpsAcc: BS.geo.accuracy || 0,
+      verifiedCount: regionSpots.length,
       feedTitle: S.chip === 0 ? 'Verified near you' : chip.label + ' near you',
       chips: this.CHIPS.map((c, i) => ({ label: c.label, bg: i === S.chip ? '#1B4BD2' : '#fff', fg: i === S.chip ? '#fff' : '#5A6B8C',
         bd: i === S.chip ? '#1B4BD2' : '#DCE5F2', pick: () => this.setState({ chip: i }) })),
       clearChips: () => this.setState({ chip: 0 }),
       feedSpots: feed.map(s => this.card(s)), feedEmpty: feed.length === 0,
-      streakLine: S.streak + '-day scout streak',
+      streakLine: this.streak() > 0 ? this.streak() + '-day scout streak' : 'Start your scout streak',
       hasUnread: !S.notifsRead,
+      gpsOn, gpsOff: !gpsOn,
       openSearch: () => this.push('search'), openNotifs: () => this.push('notifs'),
       openSettings: () => this.push('settings'),
-      cityPickerOpen: S.cityPicker,
-      openCityPicker: () => this.setState({ cityPicker: true }),
-      closeSheets: () => this.setState({ cityPicker: false, newListOpen: false, addSpotsOpen: false }),
+      openCityPicker: () => { if (!gpsOn) BS.requestGeo(); this.setState({ cityPicker: true }); },
+      closeSheets: () => this.setState({ cityPicker: false, newListOpen: false, addSpotsOpen: false, cfgOpen: false }),
       noop: e => { if (e && e.stopPropagation) e.stopPropagation(); },
-      cityOptions: this.CITIES.map(c => ({ label: c.label, count: this.inCity(c.code).length * 14 + 6, active: c.code === S.city,
-        bd: c.code === S.city ? '#1B4BD2' : '#E3EAF6', bg: c.code === S.city ? '#EDF3FE' : '#fff',
-        icon: c.code === S.city ? '#1B4BD2' : '#93A3BF',
-        pick: () => this.setState({ city: c.code, cityPicker: false, pin: this.inCity(c.code)[0].id }) })),
+      cityPickerOpen: S.cityPicker,
+      cityOptions: this.REGIONS.map(r => ({ label: r.label, count: this.inRegion(r.code).length, active: r.code === S.city,
+        bd: r.code === S.city ? '#1B4BD2' : '#E3EAF6', bg: r.code === S.city ? '#EDF3FE' : '#fff',
+        icon: r.code === S.city ? '#1B4BD2' : '#93A3BF',
+        pick: () => this.setState({ city: r.code, cityPicker: false, pin: (this.inRegion(r.code)[0] || {}).id || null }) })),
 
       mapBtnBg: S.nearbyMode === 'map' ? '#fff' : 'transparent', mapBtnFg: S.nearbyMode === 'map' ? '#1B4BD2' : '#5A6B8C',
       listBtnBg: S.nearbyMode === 'list' ? '#fff' : 'transparent', listBtnFg: S.nearbyMode === 'list' ? '#1B4BD2' : '#5A6B8C',
       showMap: () => this.setState({ nearbyMode: 'map' }), showList: () => this.setState({ nearbyMode: 'list' }),
       nearbyMap: S.nearbyMode === 'map', nearbyList: S.nearbyMode === 'list',
-      cityPills: this.CITIES.map(c => ({ label: c.label, bg: c.code === S.city ? '#1B4BD2' : '#fff', fg: c.code === S.city ? '#fff' : '#5A6B8C',
-        bd: c.code === S.city ? '#1B4BD2' : '#DCE5F2', pick: () => this.setState({ city: c.code, pin: this.inCity(c.code)[0].id }) })),
-      pins: citySpots.slice(0, 3).map((s, i) => ({ label: s.name.split(' ')[0], x: [118, 44, 196][i], y: [196, 356, 440][i],
-        bg: S.pin === s.id ? '#1B4BD2' : '#fff', fg: S.pin === s.id ? '#fff' : '#14213D', pick: () => this.setState({ pin: s.id }) })),
-      activePin: (() => { const p = this.find(S.pin) || citySpots[0]; return { ...p, meta: this.meta(p), visits: this.visits(p.id) }; })(),
-      openActivePin: () => this.push('spot', S.pin),
-      citySpots: citySpots.map(s => this.card(s)),
+      cityPills: this.REGIONS.map(r => ({ label: r.label, bg: r.code === S.city ? '#1B4BD2' : '#fff', fg: r.code === S.city ? '#fff' : '#5A6B8C',
+        bd: r.code === S.city ? '#1B4BD2' : '#DCE5F2', pick: () => this.setState({ city: r.code, pin: (this.inRegion(r.code)[0] || {}).id || null }) })),
+      pins: regionSpots.slice(0, 3).map((s, i) => ({ label: s.name.split(' ')[0], x: [118, 44, 196][i], y: [196, 356, 440][i],
+        bg: pinId === s.id ? '#1B4BD2' : '#fff', fg: pinId === s.id ? '#fff' : '#14213D', pick: () => this.setState({ pin: s.id }) })),
+      activePin: this.card(this.find(pinId) || regionSpots[0] || {}),
+      openActivePin: () => this.push('spot', pinId),
+      citySpots: regionSpots.map(s => this.card(s)),
 
-      checkinRows: citySpots.slice(0, 4).map(s => ({ name: s.name, meta: this.meta(s), dist: s.dist, pick: () => this.openCi(s.id) })),
-      addPlace: () => { this.setState({ np: { name: '', cuisine: null, price: null, halal: null, photo: false }, addDone: false }); this.push('addplace'); },
-      pageAdd: top.p === 'addplace', addForm: !S.addDone,
+      checkinRows: regionSpots.slice(0, 5).map(s => { const d = BS.distanceTo(s), near = d !== null && d <= BS.RADIUS;
+        return { name: s.name, meta: this.meta(s), dist: BS.fmtDist(d),
+          nearBg: near ? '#F1F7ED' : '#fff', nearBd: near ? '#D9EBD0' : '#E3EAF6',
+          badge: near ? 'You\'re here' : 'Too far', badgeFg: near ? '#2F6B2F' : '#93A3BF',
+          pick: () => this.openCi(s.id) }; }),
+      addPlace: () => { this.setState({ np: { name: '', cuisine: null, price: null, halal: null, photo: null }, addDone: false }); this.push('addplace'); },
+
+      lists: this.allLists().map(l => ({ name: l.name, count: this.listItems(l).length, open: () => this.push('list', l.id) })),
+      list: { name: listRaw.name, count: this.listItems(listRaw).length, note: listRaw.note },
+      listSpots: this.listItems(listRaw).map(id => this.find(id)).filter(Boolean).map(s => this.card(s)),
+      openAddSpots: () => this.setState({ addSpotsOpen: true }),
+      addSpotsOpen: S.addSpotsOpen,
+      pickerSpots: this.all().map(s => { const inList = this.listItems(listRaw).indexOf(s.id) > -1;
+        return { name: s.name, meta: this.meta(s), bd: inList ? '#1B4BD2' : '#E3EAF6', bg: inList ? '#EDF3FE' : '#fff',
+          ringBd: inList ? '#1B4BD2' : '#DCE5F2', ringBg: inList ? '#1B4BD2' : '#fff', tick: inList ? '#fff' : 'transparent',
+          toggle: () => { if ((listRaw.spots || []).indexOf(s.id) > -1) return this.flash('Already in this list'); BS.toggleInList(listRaw.id, s.id); } }; }),
+      newListOpen: S.newListOpen, listName: S.nlName,
+      listNameChange: e => this.setState({ nlName: e.target.value }),
+      listNameKey: e => { if (e.key === 'Enter') this.doCreateList(); },
+      listPrivacy: ['Private', 'Friends', 'Public'].map((label, i) => ({ label,
+        bd: S.nlPriv === i ? '#1B4BD2' : '#DCE5F2', bg: S.nlPriv === i ? '#EDF3FE' : '#fff', fg: S.nlPriv === i ? '#1B4BD2' : '#5A6B8C',
+        pick: () => this.setState({ nlPriv: i }) })),
+      createBg: S.nlName.trim() ? '#1B4BD2' : '#E7ECF5', createFg: S.nlName.trim() ? '#fff' : '#A9B6CC',
+      createList: () => this.doCreateList(),
+      newList: () => this.setState({ newListOpen: true, nlName: '', nlPriv: 0 }),
+      savedSpots: savedIds.map(id => this.card(this.find(id))), savedEmpty: savedIds.length === 0,
+
+      scouts: this.SCOUTS.map(f => ({ first: f.first, initials: f.initials, avBg: f.avBg, open: () => this.push('scout', f.id) })),
+      myCheckins: myCi.map(c => { const s = this.find(c.spotId) || {};
+        return { name: s.name || 'A spot', when: this.ago(c.createdAt), verdict: c.verdict, open: () => this.push('spot', c.spotId) }; }),
+
+      pageSearch: top.p === 'search', pageSpot: top.p === 'spot', pageScout: top.p === 'scout',
+      pageNotifs: top.p === 'notifs', pageSettings: top.p === 'settings', pageList: top.p === 'list',
+      pageAdd: top.p === 'addplace', pageThread: top.p === 'thread',
+      pop: () => this.pop(),
+      overlayTop: ios ? 56 : 14,
+
+      query: S.query, hasQuery: q.length > 0, noQuery: q.length === 0,
+      queryChange: e => this.setState({ query: e.target.value }),
+      clearQuery: () => this.setState({ query: '' }),
+      recent: S.recent.map(r => ({ label: r, pick: () => this.setState({ query: r }) })),
+      trending: [
+        { n: '01', label: 'nasi lemak', note: 'top search' },
+        { n: '02', label: 'kopitiam', note: 'trending' },
+        { n: '03', label: 'roti canai', note: 'late night' },
+        { n: '04', label: 'noodles', note: 'lunch' },
+      ].map(t => ({ ...t, pick: () => this.setState({ query: t.label }) })),
+      results: results.map(s => this.card(s)), resultsEmpty: q.length > 0 && results.length === 0,
+      resultCountLabel: results.length + (results.length === 1 ? ' verified spot' : ' verified spots'),
+
+      spot: { ...this.card(spotRaw), again: spotRaw.again },
+      spotTags: (spotRaw.tags || []).map(t => ({ label: t })),
+      visitors: (() => {
+        const real = BS.store.checkins.filter(c => c.spotId === spotRaw.id).slice(-3).reverse().map(c => ({
+          who: (ST.user && ST.user.name) || 'You', initials: me.initials, avBg: '#1B4BD2',
+          when: this.ago(c.createdAt), quote: c.note || (c.verdict === 'Definitely' ? 'Would go again.' : c.verdict === 'Maybe' ? 'Worth a try.' : 'Not for me.'),
+          open: () => this.setState({ tab: 4, stack: [] }) }));
+        const mock = this.SCOUTS.filter(f => (f.spots || []).includes(spotRaw.id)).map((f, i) => ({
+          who: f.name, initials: f.initials, avBg: f.avBg, when: ['2 d ago', '5 d ago', '1 w ago'][i] || '1 w ago',
+          quote: spotRaw.quote, open: () => this.push('scout', f.id) }));
+        return real.concat(mock).slice(0, 4);
+      })(),
+      facts: this.FACTS_ICONS.map(f => ({ ...f, value: f.key === 'hours' ? spotRaw.hours : f.key === 'price' ? 'RM' + spotRaw.priceNum + ' pp' : spotRaw.halal })),
+      saveActive: () => this.toggleSave(spotRaw.id),
+      shareSpot: () => {
+        const txt = spotRaw.name + ' — verified on biteScout';
+        if (navigator.share) navigator.share({ title: 'biteScout', text: txt }).catch(() => {});
+        else { try { navigator.clipboard.writeText(txt); } catch (e) {} this.flash('Copied'); }
+      },
+      startCheckIn: () => this.openCi(spotRaw.id),
+
+      scout: { ...scoutRaw }, scoutSpots: (scoutRaw.spots || []).map(id => this.find(id)).filter(Boolean).map(s => this.card(s)),
+      followLabel: ST.following[scoutRaw.id] ? 'Following' : 'Follow',
+      followBg: ST.following[scoutRaw.id] ? '#EDF3FE' : '#1B4BD2',
+      followFg: ST.following[scoutRaw.id] ? '#1B4BD2' : '#fff',
+      followBd: ST.following[scoutRaw.id] ? '#D7E5FA' : '#1B4BD2',
+      toggleFollow: () => { const on = !ST.following[scoutRaw.id]; BS.setFollow(scoutRaw.id, on);
+        this.flash(on ? 'Following ' + scoutRaw.first : 'Unfollowed ' + scoutRaw.first); },
+      messageScout: () => this.push('thread', scoutRaw.id),
+      messages: (ST.msgs[scoutRaw.id] || this.seedMsgs(scoutRaw)).map(m => ({ text: m.text,
+        align: m.me ? 'flex-end' : 'flex-start', bg: m.me ? '#1B4BD2' : '#fff', fg: m.me ? '#fff' : '#14213D',
+        radius: m.me ? '16px 16px 5px 16px' : '16px 16px 16px 5px' })),
+      draft: S.draft, draftChange: e => this.setState({ draft: e.target.value }),
+      draftKey: e => { if (e.key === 'Enter') this.sendMsg(scoutRaw); },
+      sendMsg: () => this.sendMsg(scoutRaw),
+      sendBg: S.draft.trim() ? '#1B4BD2' : '#C9D6EE',
+
+      notifs: this.NOTIFS.map((n, i) => ({ ...n, unread: !S.notifsRead && i < 3,
+        bg: !S.notifsRead && i < 3 ? '#fff' : '#F9FBFE', bd: !S.notifsRead && i < 3 ? '#D7E5FA' : '#E9F0FB',
+        open: () => this.push('spot', n.spot) })),
+      markRead: () => { this.setState({ notifsRead: true }); this.flash('All caught up'); },
+
+      settingRows: [
+        { key: 'loc', label: 'Location access', note: gpsOn ? 'On · ±' + BS.geo.accuracy + ' m' : 'Needed to verify check-ins' },
+        { key: 'push', label: 'Push notifications', note: 'When friends check in nearby' },
+        { key: 'halal', label: 'Halal-only by default', note: 'Filters your feed automatically' },
+      ].map(r => ({ ...r, trackBg: ST.settings[r.key] ? '#1B4BD2' : '#DCE5F2', justify: ST.settings[r.key] ? 'flex-end' : 'flex-start',
+        toggle: () => { const v = !ST.settings[r.key]; BS.setSetting(r.key, v); if (r.key === 'loc' && v) BS.requestGeo(); } })),
+      signOut: () => { BS.signOut(); this.setState({ phase: 'onboard', ob: 0, stack: [], auth: 'form', email: '', tab: 0 }); },
+
+      cloudOn: BS.cloud.on, cloudOff: !BS.cloud.on,
+      cloudLabel: BS.cloud.on ? 'Cloud sync on' : (BS.cloud.configured ? 'Connecting…' : 'Saving on this phone only'),
+      cloudNote: BS.cloud.on ? 'Signed in with Firebase — check-ins sync to Firestore' : (BS.cloud.error || 'Paste your Firebase config to sync across phones'),
+      cloudDot: BS.cloud.on ? '#3D8B3D' : '#F97A1F',
+      openCfg: () => this.setState({ cfgOpen: true, cfgText: '', cfgErr: '' }),
+      cfgOpen: S.cfgOpen, cfgText: S.cfgText, cfgErr: S.cfgErr, hasCfgErr: !!S.cfgErr,
+      cfgChange: e => this.setState({ cfgText: e.target.value, cfgErr: '' }),
+      saveCfg: () => {
+        BS.saveConfig(S.cfgText).then(r => {
+          if (r && r.ok === false) return this.setState({ cfgErr: r.error || 'Could not read that config' });
+          this.setState({ cfgOpen: false }); this.flash('Firebase connected');
+        });
+      },
+      disconnectCloud: () => BS.disconnect(),
+      resetData: () => BS.reset(),
+
+      ciOpen: !!S.ci, ciForm: !S.ciDone, ciDone: S.ciDone,
+      ciSpotName: ciSpot.name, ciSpotVisits: BS.visitsFor(ciSpot.id), streakAfter: this.streak(),
+      ciNear: ciNear, ciFar: !ciNear, ciDistLabel: BS.fmtDist(ciDist),
+      closeCi: () => this.setState({ ci: null, ciDone: false, ciPhoto: null, ciVerdict: null, ciNote: '' }),
+      ciViewSpot: () => { const id = S.ci; this.setState({ ci: null, ciDone: false, ciPhoto: null, ciVerdict: null, ciNote: '' }); this.push('spot', id); },
+      noPhoto: !S.ciPhoto, hasPhoto: !!S.ciPhoto,
+      ciPhotoEl: S.ciPhoto ? React.createElement('img', { src: S.ciPhoto, alt: '', style: { width: '100%', height: '100%', borderRadius: 14, objectFit: 'cover' } }) : null,
+      photoBd: S.ciPhoto ? '#1B4BD2' : '#DCE5F2', photoBg: S.ciPhoto ? '#EDF3FE' : '#F9FBFE',
+      togglePhoto: () => { if (S.ciPhoto) return this.setState({ ciPhoto: null });
+        BS.pickPhoto().then(d => { if (d) this.setState({ ciPhoto: d }); }); },
+      verdicts: this.VERDICTS.map((v, i) => ({ ...v, bd: S.ciVerdict === i ? '#1B4BD2' : '#DCE5F2',
+        bg: S.ciVerdict === i ? '#EDF3FE' : '#fff', fg: S.ciVerdict === i ? '#1B4BD2' : '#5A6B8C',
+        pick: () => this.setState({ ciVerdict: i }) })),
+      ciNote: S.ciNote, ciNoteChange: e => this.setState({ ciNote: e.target.value }),
+      ciIncomplete: !ciReady, ciBtnBg: ciReady ? '#1B4BD2' : '#E7ECF5', ciBtnFg: ciReady ? '#fff' : '#A9B6CC',
+      submitCheckIn: () => {
+        if (!ciReady) return;
+        BS.addCheckin(S.ci, this.VERDICTS[S.ciVerdict].label, S.ciNote, S.ciPhoto);
+        this.setState({ ciDone: true });
+      },
+
+      addForm: !S.addDone, addDone: S.addDone,
       npName: S.np.name, npNameChange: e => this.setState(p => ({ np: { ...p.np, name: e.target.value } })),
       npCuisines: ['Nasi lemak', 'Kopitiam', 'Mamak', 'Noodles', 'Satay', 'Dessert', 'Other'].map(label => ({ label,
         bd: S.np.cuisine === label ? '#1B4BD2' : '#DCE5F2', bg: S.np.cuisine === label ? '#EDF3FE' : '#fff', fg: S.np.cuisine === label ? '#1B4BD2' : '#5A6B8C',
@@ -1347,151 +1554,39 @@ class Component extends DCLogic {
       npHalal: ['Certified', 'Pork-free', 'Non-halal'].map(label => ({ label,
         bd: S.np.halal === label ? '#1B4BD2' : '#DCE5F2', bg: S.np.halal === label ? '#EDF3FE' : '#fff', fg: S.np.halal === label ? '#1B4BD2' : '#5A6B8C',
         pick: () => this.setState(p => ({ np: { ...p.np, halal: label } })) })),
-      npNoPhoto: !S.np.photo, npHasPhoto: S.np.photo,
+      npNoPhoto: !S.np.photo, npHasPhoto: !!S.np.photo,
+      npPhotoEl: S.np.photo ? React.createElement('img', { src: S.np.photo, alt: '', style: { width: '100%', height: '100%', borderRadius: 14, objectFit: 'cover' } }) : null,
       npPhotoBd: S.np.photo ? '#1B4BD2' : '#DCE5F2', npPhotoBg: S.np.photo ? '#EDF3FE' : '#F9FBFE',
-      npTogglePhoto: () => this.setState(p => ({ np: { ...p.np, photo: !p.np.photo } })),
+      npTogglePhoto: () => { if (S.np.photo) return this.setState(p => ({ np: { ...p.np, photo: null } }));
+        BS.pickPhoto().then(d => { if (d) this.setState(p => ({ np: { ...p.np, photo: d } })); }); },
       npIncomplete: !npReady, npBtnBg: npReady ? '#1B4BD2' : '#E7ECF5', npBtnFg: npReady ? '#fff' : '#A9B6CC',
-      submitPlace: () => this.doAddPlace(npReady),
-      addDone: S.addDone,
+      submitPlace: () => {
+        if (!npReady) return;
+        const s = BS.addSpot({ name: S.np.name.trim(), cuisine: S.np.cuisine, priceNum: S.np.price || 12,
+          halal: S.np.halal || 'Unverified', photo: S.np.photo });
+        BS.addCheckin(s.id, 'Definitely', 'Added this spot and checked in first.', S.np.photo);
+        this.setState({ addDone: true, newId: s.id });
+      },
       viewNewPlace: () => { const id = S.newId; this.setState(p => ({ stack: p.stack.slice(0, -1) })); this.push('spot', id); },
-      pageThread: top.p === 'thread',
-      messages: (S.msgs[scoutRaw.id] || this.seedMsgs(scoutRaw)).map(m => ({ text: m.text,
-        align: m.me ? 'flex-end' : 'flex-start',
-        bg: m.me ? '#1B4BD2' : '#fff', fg: m.me ? '#fff' : '#14213D',
-        radius: m.me ? '16px 16px 5px 16px' : '16px 16px 16px 5px' })),
-      draft: S.draft, draftChange: e => this.setState({ draft: e.target.value }),
-      draftKey: e => { if (e.key === 'Enter') this.sendMsg(scoutRaw); },
-      sendMsg: () => this.sendMsg(scoutRaw),
-      sendBg: S.draft.trim() ? '#1B4BD2' : '#C9D6EE',
-
-      lists: this.allLists().map(l => ({ name: l.name, count: this.listItems(l).length, open: () => this.push('list', l.id) })),
-      list: { name: listRaw.name, count: this.listItems(listRaw).length, note: listRaw.note },
-      listSpots: this.listItems(listRaw).map(id => this.card(this.find(id))),
-      openAddSpots: () => this.setState({ addSpotsOpen: true }),
-      addSpotsOpen: S.addSpotsOpen,
-      pickerSpots: this.all().map(s => { const inList = this.listItems(listRaw).indexOf(s.id) > -1;
-        return { name: s.name, meta: this.meta(s), bd: inList ? '#1B4BD2' : '#E3EAF6', bg: inList ? '#EDF3FE' : '#fff',
-          ringBd: inList ? '#1B4BD2' : '#DCE5F2', ringBg: inList ? '#1B4BD2' : '#fff', tick: inList ? '#fff' : 'transparent',
-          toggle: () => this.toggleInList(listRaw, s.id) }; }),
-      newListOpen: S.newListOpen, listName: S.nlName,
-      listNameChange: e => this.setState({ nlName: e.target.value }),
-      listNameKey: e => { if (e.key === 'Enter') this.doCreateList(); },
-      listPrivacy: ['Private', 'Friends', 'Public'].map((label, i) => ({ label,
-        bd: S.nlPriv === i ? '#1B4BD2' : '#DCE5F2', bg: S.nlPriv === i ? '#EDF3FE' : '#fff', fg: S.nlPriv === i ? '#1B4BD2' : '#5A6B8C',
-        pick: () => this.setState({ nlPriv: i }) })),
-      createBg: S.nlName.trim() ? '#1B4BD2' : '#E7ECF5', createFg: S.nlName.trim() ? '#fff' : '#A9B6CC',
-      createList: () => this.doCreateList(),
-      savedSpots: savedIds.map(id => this.card(this.find(id))),
-      savedEmpty: savedIds.length === 0,
-      newList: () => this.setState({ newListOpen: true, nlName: '', nlPriv: 0 }),
-
-      scouts: this.SCOUTS.map(f => ({ first: f.first, initials: f.initials, avBg: f.avBg, open: () => this.push('scout', f.id) })),
-      myCheckins: this.MINE.map(m => { const s = this.find(m.spot);
-        return { name: s.name, when: m.when, verdict: m.verdict, open: () => this.push('spot', s.id) }; }),
-
-      pageSearch: top.p === 'search', pageSpot: top.p === 'spot', pageScout: top.p === 'scout',
-      pageNotifs: top.p === 'notifs', pageSettings: top.p === 'settings', pageList: top.p === 'list',
-      pop: () => this.pop(),
-      overlayTop: ios ? 56 : 14,
-
-      query: S.query, hasQuery: q.length > 0, noQuery: q.length === 0,
-      queryChange: e => this.setState({ query: e.target.value }),
-      clearQuery: () => this.setState({ query: '' }),
-      recent: S.recent.map(r => ({ label: r, pick: () => this.setState({ query: r }) })),
-      trending: [
-        { n: '01', label: 'nasi lemak', note: '38 check-ins' },
-        { n: '02', label: 'char kuey teow', note: '31 check-ins' },
-        { n: '03', label: 'kacang pool', note: '22 check-ins' },
-        { n: '04', label: 'late night mamak', note: '19 check-ins' },
-      ].map(t => ({ ...t, pick: () => this.setState({ query: t.label }) })),
-      results: results.map(s => this.card(s)), resultsEmpty: q.length > 0 && results.length === 0,
-      resultCountLabel: results.length + (results.length === 1 ? ' verified spot' : ' verified spots'),
-
-      spot: { ...this.card(spotRaw), again: spotRaw.again, walk: spotRaw.walk },
-      spotTags: spotRaw.tags.map(t => ({ label: t })),
-      visitors: visitorsOf(spotRaw.id).map((f, i) => ({ who: f.name, initials: f.initials, avBg: f.avBg,
-        when: ['2 d ago', '5 d ago', '1 w ago'][i], quote: (this.find(f.spots[0]) || spotRaw).quote,
-        open: () => this.push('scout', f.id) })),
-      facts: this.FACTS_ICONS.map(f => ({ ...f, value: f.key === 'hours' ? spotRaw.hours : f.key === 'price' ? 'RM' + spotRaw.priceNum + ' pp' : spotRaw.halal })),
-      saveActive: () => this.toggleSave(spotRaw.id),
-      shareSpot: () => this.flash('Link copied'),
-      startCheckIn: () => this.openCi(spotRaw.id),
-
-      scout: { ...scoutRaw }, scoutSpots: scoutRaw.spots.map(id => this.card(this.find(id))),
-      followLabel: S.following[scoutRaw.id] ? 'Following' : 'Follow',
-      followBg: S.following[scoutRaw.id] ? '#EDF3FE' : '#1B4BD2',
-      followFg: S.following[scoutRaw.id] ? '#1B4BD2' : '#fff',
-      followBd: S.following[scoutRaw.id] ? '#D7E5FA' : '#1B4BD2',
-      toggleFollow: () => { const on = !S.following[scoutRaw.id];
-        this.setState(p => ({ following: { ...p.following, [scoutRaw.id]: on } }));
-        this.flash(on ? 'Following ' + scoutRaw.first : 'Unfollowed ' + scoutRaw.first); },
-      messageScout: () => this.push('thread', scoutRaw.id),
-
-      notifs: this.NOTIFS.map((n, i) => ({ ...n, unread: !S.notifsRead && i < 3,
-        bg: !S.notifsRead && i < 3 ? '#fff' : '#F9FBFE', bd: !S.notifsRead && i < 3 ? '#D7E5FA' : '#E9F0FB',
-        open: () => this.push('spot', n.spot) })),
-      markRead: () => { this.setState({ notifsRead: true }); this.flash('All caught up'); },
-
-      settingRows: [
-        { key: 'loc', label: 'Location access', note: 'Needed to verify check-ins' },
-        { key: 'push', label: 'Push notifications', note: 'When friends check in nearby' },
-        { key: 'halal', label: 'Halal-only by default', note: 'Filters your feed automatically' },
-      ].map(r => ({ ...r, trackBg: S.settings[r.key] ? '#1B4BD2' : '#DCE5F2', justify: S.settings[r.key] ? 'flex-end' : 'flex-start',
-        toggle: () => this.setState(p => ({ settings: { ...p.settings, [r.key]: !p.settings[r.key] } })) })),
-      signOut: () => this.setState({ phase: 'onboard', ob: 0, stack: [], auth: 'form', email: '', loc: 'idle', tab: 0 }),
-
-      ciOpen: !!S.ci, ciForm: !S.ciDone, ciDone: S.ciDone,
-      ciSpotName: ciSpot.name, ciSpotVisits: this.visits(ciSpot.id), streakAfter: S.streak,
-      closeCi: () => this.setState({ ci: null, ciDone: false, ciPhoto: false, ciVerdict: null, ciNote: '' }),
-      ciViewSpot: () => { const id = S.ci; this.setState({ ci: null, ciDone: false, ciPhoto: false, ciVerdict: null, ciNote: '' }); this.push('spot', id); },
-      noPhoto: !S.ciPhoto, hasPhoto: S.ciPhoto,
-      photoBd: S.ciPhoto ? '#1B4BD2' : '#DCE5F2', photoBg: S.ciPhoto ? '#EDF3FE' : '#F9FBFE',
-      togglePhoto: () => this.setState(p => ({ ciPhoto: !p.ciPhoto })),
-      verdicts: this.VERDICTS.map((v, i) => ({ ...v, bd: S.ciVerdict === i ? '#1B4BD2' : '#DCE5F2',
-        bg: S.ciVerdict === i ? '#EDF3FE' : '#fff', fg: S.ciVerdict === i ? '#1B4BD2' : '#5A6B8C',
-        pick: () => this.setState({ ciVerdict: i }) })),
-      ciNote: S.ciNote, ciNoteChange: e => this.setState({ ciNote: e.target.value }),
-      ciIncomplete: !ciReady, ciBtnBg: ciReady ? '#1B4BD2' : '#E7ECF5', ciBtnFg: ciReady ? '#fff' : '#A9B6CC',
-      submitCheckIn: () => { if (!ciReady) return; this.setState(p => ({ ciDone: true, myVisits: p.myVisits + 1, streak: p.streak + 1,
-        bump: { ...p.bump, [p.ci]: (p.bump[p.ci] || 0) + 1 } })); },
 
       installOpen: S.install, showInstall: () => this.setState({ install: true }),
       dismissInstall: () => this.setState({ install: false }),
-      doInstall: () => { this.setState({ install: false }); this.flash('Added to your home screen'); },
+      doInstall: () => { this.setState({ install: false }); this.flash('Use Chrome menu → Install app'); },
 
       toast: !!S.toast, toastText: S.toast,
     };
   }
-  toggleInList(list, id) {
-    const cur = this.state.listAdd[list.id] || [];
-    const seeded = (list.spots || []).indexOf(id) > -1;
-    if (seeded) return this.flash('Already in this list');
-    const next = cur.indexOf(id) > -1 ? cur.filter(x => x !== id) : cur.concat([id]);
-    this.setState(p => ({ listAdd: { ...p.listAdd, [list.id]: next } }));
-  }
+
   doCreateList() {
     const name = this.state.nlName.trim();
     if (!name) return;
-    const note = ['Private', 'Shared with friends', 'Public list'][this.state.nlPriv];
-    const id = 'ul' + (this.state.extraLists.length + 1);
-    this.setState(p => ({ extraLists: [...p.extraLists, { id, name, note, spots: [] }], newListOpen: false, nlName: '' }));
+    BS.createList(name, ['Private', 'Shared with friends', 'Public list'][this.state.nlPriv]);
+    this.setState({ newListOpen: false, nlName: '' });
     this.flash('List "' + name + '" created');
-  }
-  doAddPlace(ready) {
-    if (!ready) return;
-    const S = this.state, np = S.np, id = 'c' + (S.extraSpots.length + 1);
-    const city = this.cityOf(S.city);
-    const spot = { id, city: S.city, name: np.name.trim(), cuisine: np.cuisine, priceNum: np.price || 12,
-      area: city.short, dist: '120 m', km: .12, walk: 'walk 2 min', visits: 1, again: 100,
-      halal: np.halal || 'Unverified', hours: 'Hours not added yet', open: true,
-      slot: 'photo — ' + np.name.trim().toLowerCase(), who: 'You', initials: 'AF', avBg: '#1B4BD2',
-      quote: 'added this spot and checked in first.', tags: ['New', 'Needs 2 confirmations'] };
-    this.setState(p => ({ extraSpots: [...p.extraSpots, spot], addDone: true, newId: id,
-      myVisits: p.myVisits + 1, streak: p.streak + 1 }));
   }
   seedMsgs(scout) {
     return [
-      { me: false, text: 'Eh, you tried ' + scout.spots.length + ' spots I posted already?' },
+      { me: false, text: 'Eh, you tried any of my spots already?' },
       { me: true, text: 'Two so far — the one you checked in last week was solid.' },
       { me: false, text: 'Go early ah, before 9am. Less queue.' },
     ];
@@ -1499,13 +1594,16 @@ class Component extends DCLogic {
   sendMsg(scout) {
     const t = this.state.draft.trim();
     if (!t) return;
-    const cur = this.state.msgs[scout.id] || this.seedMsgs(scout);
-    this.setState(p => ({ msgs: { ...p.msgs, [scout.id]: cur.concat([{ me: true, text: t }]) }, draft: '' }));
+    const cur = BS.store.msgs[scout.id] || this.seedMsgs(scout);
+    BS.store.msgs[scout.id] = cur;
+    BS.pushMsg(scout.id, { me: true, text: t });
+    this.setState({ draft: '' });
   }
-  openCi(id) { this.setState({ ci: id, ciDone: false, ciPhoto: false, ciVerdict: null, ciNote: '' }); }
+  openCi(id) { this.setState({ ci: id, ciDone: false, ciPhoto: null, ciVerdict: null, ciNote: '' }); }
   submitEmail() {
     const ok = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(this.state.email.trim());
     if (!ok) return this.setState({ emailErr: true });
+    BS.signInEmailLink(this.state.email.trim());
     this.setState({ auth: 'sent', emailErr: false });
   }
 }

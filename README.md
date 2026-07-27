@@ -54,7 +54,9 @@ if you later need native camera/geolocation APIs beyond what the web gives you.)
 5. copy that whole block, then in the app: **Me → gear → "Saving on this phone only"** → paste → **Connect**.
 
 Then in the Firebase console enable:
-- **Authentication → Sign-in method → Google** (and **Email link** if you want passwordless email)
+- **Authentication → Sign-in method → Google** (and **Email link** for passwordless email).
+  Add your GitHub Pages domain under Authentication → Settings → **Authorised domains**,
+  otherwise the Google popup is rejected.
 - **Firestore Database → Create database** (production mode is fine)
 - **Storage → Get started** (for check-in photos)
 
@@ -81,8 +83,9 @@ Real: your GPS position and true distances to every spot, the 150 m check-in rul
 photos (stored on device, uploaded to Firebase Storage once connected), saving, list building,
 adding new places, streak and level from your actual check-ins, offline shell, install to home screen.
 
-Mocked: the other scouts (Aisyah, Wei Jun…), the activity feed, messages, and the Nearby map
-visual — the map is still the stylised placeholder, real tiles are the next step. Photos of the
+Mocked: nothing social is faked any more. The activity feed, "who\'s been" on a spot and your
+profile stats are built only from real check-ins. Until Firebase is connected there is one
+local account ("You") on this phone, and other people\'s check-ins can\'t reach you. Photos of the
 seed spots are labelled placeholders until someone checks in with a real photo.
 
 Note on the seed data: on first launch the nine starter spots are planted around wherever you
@@ -96,8 +99,9 @@ and the check-in radius are testable without driving to Bangsar.
 2. **Firestore** — collections: `spots`, `checkins`, `users`, `lists`, `follows`.
    A check-in document is the unit of trust: `{spotId, userId, photoUrl, verdict, geo, createdAt}`.
    Compute `visits` and `wouldGoAgain%` from it rather than storing them.
-3. **Real map** — Google Maps JS SDK (or MapLibre + free tiles) in the Nearby tab; the pin
-   markers, bottom card and city switcher already have their places in the layout.
+3. **Map** — done: MapLibre GL + OpenStreetMap raster tiles, no API key or billing. Markers are
+   your real spots, the blue dot is you, the crosshair button re-centres. If you later want
+   Google's tiles, only the style URL in `OSM_STYLE` changes.
 4. **Geolocation gate** — `navigator.geolocation.getCurrentPosition` on the check-in screen;
    reject check-ins further than ~150 m from the spot. This is the anti-fake-review rule.
 5. **Photo upload** — `<input type="file" accept="image/*" capture="environment">` →

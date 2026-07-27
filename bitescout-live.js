@@ -172,6 +172,8 @@
       cloud.storage = St.getStorage(cloud.app);
       cloud.fns = { Au: Au, F: F, St: St };
       Au.onAuthStateChanged(cloud.auth, function (u) {
+        if (u) cloudWrite('users', { id: u.uid, name: u.displayName || 'Scout', email: u.email || '',
+          photo: u.photoURL || '', lastSeen: nowISO() });
         store.user = u ? { uid: u.uid, name: u.displayName || 'Scout', email: u.email || '',
           initials: (u.displayName || 'S C').split(' ').map(function (w) { return w[0]; }).join('').slice(0, 2).toUpperCase() } : null;
         emit();
@@ -226,7 +228,12 @@
       var base = (store.spots.find(function (s) { return s.id === id; }) || {}).visits || 0;
       return base + store.checkins.filter(function (c) { return c.spotId === id; }).length;
     },
-    myCheckins: function () { return store.checkins.slice().reverse(); },
+    myCheckins: function () {
+      var me = (store.user && store.user.uid) || 'local';
+      return store.checkins.filter(function (c) { return c.userId === me; }).reverse();
+    },
+    activity: function () { return store.checkins.slice().sort(function (a, b) { return a.createdAt < b.createdAt ? 1 : -1; }); },
+    checkinsFor: function (id) { return store.checkins.filter(function (c) { return c.spotId === id; }).sort(function (a, b) { return a.createdAt < b.createdAt ? 1 : -1; }); },
     photoFor: function (id) {
       var c = store.checkins.filter(function (x) { return x.spotId === id && x.photo; }).pop();
       var s = store.spots.find(function (x) { return x.id === id; });
@@ -234,9 +241,10 @@
     },
     pickPhoto: pickPhoto,
     addCheckin: function (spotId, verdict, note, photo) {
+      var u = store.user || {};
       var c = { id: uid('ci'), spotId: spotId, verdict: verdict, note: note || '', photo: photo || null,
-                userId: (store.user && store.user.uid) || 'local', createdAt: nowISO(),
-                geo: geo.pos || null };
+                userId: u.uid || 'local', userName: u.name || 'You', userInitials: u.initials || 'ME',
+                createdAt: nowISO(), geo: geo.pos || null };
       store.checkins.push(c); emit();
       if (cloud.db) uploadPhoto(c.photo, 'checkins/' + c.id + '.jpg').then(function (url) {
         cloudWrite('checkins', Object.assign({}, c, { photo: url }));
@@ -279,13 +287,18 @@
     pushMsg: function (threadId, msg) {
       store.msgs[threadId] = (store.msgs[threadId] || []).concat([msg]); emit();
     },
+    signInLocal: function (name) {
+      var n = (name || 'You').trim();
+      store.user = { uid: 'local', name: n, email: 'this device only', initials: n.split(' ').map(function (w) { return w[0]; }).join('').slice(0, 2).toUpperCase(), local: true };
+      emit(); return Promise.resolve(store.user);
+    },
     signInGoogle: function () {
-      if (!cloud.auth) { store.user = { uid: 'local', name: 'You', email: 'on this device', initials: 'ME' }; emit(); return Promise.resolve(store.user); }
+      if (!cloud.auth) return Promise.resolve({ needsCloud: true });
       var Au = cloud.fns.Au;
       return Au.signInWithPopup(cloud.auth, new Au.GoogleAuthProvider()).catch(function (e) { cloud.error = e.message; emit(); });
     },
     signInEmailLink: function (email) {
-      if (!cloud.auth) { store.user = { uid: 'local', name: email.split('@')[0], email: email, initials: email.slice(0, 2).toUpperCase() }; emit(); return Promise.resolve(true); }
+      if (!cloud.auth) return Promise.resolve({ needsCloud: true });
       var Au = cloud.fns.Au;
       return Au.sendSignInLinkToEmail(cloud.auth, email, { url: location.href, handleCodeInApp: true })
         .then(function () { localStorage.setItem('bs.emailForSignIn', email); return true; })

@@ -11,6 +11,8 @@
 <link rel="manifest" href="./manifest.json">
 <link rel="apple-touch-icon" href="./icon-192.png">
 <link rel="icon" href="./icon-192.png">
+<meta name="ext-resource-dependency" content="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js" data-resource-id="maplibre">
+<meta name="ext-resource-dependency" content="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css" data-resource-id="maplibreCss">
 <meta name="ext-resource-dependency" content="https://unpkg.com/react@18.3.1/umd/react.production.min.js" data-resource-id="react">
 <meta name="ext-resource-dependency" content="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js" data-resource-id="reactDom">
 <template id="__bundler_thumbnail" data-bg-color="#1B4BD2">
@@ -29,6 +31,8 @@
 <x-dc>
 <helmet>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css" rel="stylesheet">
+<script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
 <script src="./bitescout-live.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
@@ -175,7 +179,17 @@ input::placeholder,textarea::placeholder{color:#93A3BF}
         <input type="email" placeholder="you@email.com" value="{{ email }}" onChange="{{ emailChange }}" onKeyDown="{{ emailKey }}" style="width:100%; box-sizing:border-box; height:54px; padding:0 18px; border:1.5px solid {{ emailBorder }}; border-radius:17px; background:#F9FBFE; font-family:inherit; font-size:15.5px; color:#14213D; outline:none" style-focus="border-color:#1B4BD2; background:#fff">
         <sc-if value="{{ emailErr }}" hint-placeholder-val="{{ false }}"><div style="margin-top:8px; font-size:12.5px; font-weight:600; color:#E5484D">Hmm, that email doesn't look right.</div></sc-if>
         <button onClick="{{ emailSubmit }}" style="margin-top:12px; width:100%; display:flex; align-items:center; justify-content:center; gap:9px; height:54px; border:none; border-radius:17px; background:#1B4BD2; color:#fff; font-family:inherit; font-size:16px; font-weight:700; cursor:pointer" style-hover="background:#1640B8" style-active="transform:scale(.98)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"></rect><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path></svg><span>Send sign-in link</span></button>
-        <div style="margin-top:14px; display:flex; align-items:flex-start; gap:7px; justify-content:center"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#93A3BF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-top:1px"><rect width="18" height="11" x="3" y="11" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg><span style="font-size:12.5px; color:#93A3BF; line-height:1.45">No password needed — we email you a secure link.</span></div>
+        <div style="margin-top:14px; display:flex; align-items:flex-start; gap:7px; justify-content:center"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#93A3BF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-top:1px"><rect width="18" height="11" x="3" y="11" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg><span style="font-size:12.5px; color:#93A3BF; line-height:1.45">{{ authNote }}</span></div>
+        <sc-if value="{{ cloudNotReady }}" hint-placeholder-val="{{ true }}">
+          <div style="margin-top:18px; padding:15px 16px; border-radius:16px; background:#FEF6EE; border:1px solid #FADCC4">
+            <div style="font-size:13px; font-weight:700; color:#9A4C0C">Account sign-in isn't connected yet</div>
+            <div style="margin-top:4px; font-size:12.5px; line-height:1.5; color:#9A4C0C">Connect your Firebase project once and Google + email links work for real, on every phone.</div>
+            <div style="margin-top:12px; display:flex; gap:9px">
+              <button onClick="{{ openCfgFromAuth }}" style="flex:1; height:46px; border:none; border-radius:13px; background:#F97A1F; color:#fff; font-family:inherit; font-size:13.5px; font-weight:700; cursor:pointer">Connect Firebase</button>
+              <button onClick="{{ continueLocal }}" style="flex:1; height:46px; border:1.5px solid #F0C9A5; border-radius:13px; background:#fff; color:#9A4C0C; font-family:inherit; font-size:13.5px; font-weight:700; cursor:pointer">Start on this phone</button>
+            </div>
+          </div>
+        </sc-if>
       </div>
       <div style="padding:14px 30px 52px; text-align:center; font-size:11.5px; line-height:1.5; color:#93A3BF">By continuing you agree to our <a href="#" style="font-weight:600">Terms</a> and <a href="#" style="font-weight:600">Privacy Policy</a>.</div>
     </sc-if>
@@ -304,17 +318,14 @@ input::placeholder,textarea::placeholder{color:#93A3BF}
     </div>
     <sc-if value="{{ nearbyMap }}" hint-placeholder-val="{{ true }}">
       <div style="flex:1; position:relative; overflow:hidden; background:#E8EEF7">
-        <div style="position:absolute; inset:0; background-image:linear-gradient(#DCE5F2 1px,transparent 1px),linear-gradient(90deg,#DCE5F2 1px,transparent 1px); background-size:46px 46px"></div>
-        <div style="position:absolute; left:-40px; top:110px; width:520px; height:22px; background:#F4F7FC; transform:rotate(-14deg)"></div>
-        <div style="position:absolute; left:64px; top:-30px; width:20px; height:640px; background:#F4F7FC"></div>
-        <div style="position:absolute; left:14px; top:14px; padding:6px 11px; border-radius:8px; background:rgba(255,255,255,.9); font-family:ui-monospace,Menlo,monospace; font-size:10px; letter-spacing:.4px; color:#8798B8; text-transform:uppercase">map — {{ cityShort }}</div>
-        <sc-for list="{{ pins }}" as="p" hint-placeholder-count="3">
-          <button onClick="{{ p.pick }}" style="position:absolute; left:{{ p.x }}px; top:{{ p.y }}px; display:flex; align-items:center; gap:6px; height:34px; padding:0 12px 0 8px; border:none; border-radius:99px; cursor:pointer; background:{{ p.bg }}; color:{{ p.fg }}; font-family:inherit; font-size:12.5px; font-weight:700; box-shadow:0 4px 12px rgba(20,33,61,.18)">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg>
-            <span>{{ p.label }}</span>
-          </button>
-        </sc-for>
-        <div style="position:absolute; left:50%; bottom:172px; transform:translateX(-50%); width:18px; height:18px; border-radius:50%; background:#2E8FE0; border:3px solid #fff; box-shadow:0 2px 8px rgba(20,33,61,.3)"></div>
+        <div ref="{{ mapRef }}" style="position:absolute; inset:0"></div>
+        <sc-if value="{{ mapLoading }}" hint-placeholder-val="{{ true }}">
+          <div style="position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; background:#E8EEF7">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#5A6B8C" stroke-width="2.4" stroke-linecap="round" style="animation:bsSpin .8s linear infinite"><path d="M21 12a9 9 0 1 1-6.219-8.56"></path></svg>
+            <span style="font-size:12.5px; font-weight:600; color:#5A6B8C">Loading map…</span>
+          </div>
+        </sc-if>
+        <button onClick="{{ recenterMap }}" style="position:absolute; top:14px; right:14px; z-index:5; width:42px; height:42px; border:none; border-radius:13px; background:rgba(255,255,255,.95); display:flex; align-items:center; justify-content:center; cursor:pointer; color:#1B4BD2; box-shadow:0 3px 10px rgba(20,33,61,.16)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M12 2v3"></path><path d="M12 19v3"></path><path d="M2 12h3"></path><path d="M19 12h3"></path></svg></button>
         <div style="position:absolute; left:16px; right:16px; bottom:16px; padding:15px 16px; border-radius:18px; background:#fff; border:1px solid #E3EAF6; box-shadow:0 8px 24px rgba(20,33,61,.14)">
           <div style="display:flex; align-items:center; justify-content:space-between; gap:10px">
             <div>
@@ -512,14 +523,13 @@ input::placeholder,textarea::placeholder{color:#93A3BF}
         <div style="display:flex; align-items:baseline; justify-content:space-between">
           <div style="font-size:12.5px; font-weight:700; color:#93A3BF; letter-spacing:.3px; text-transform:uppercase">Scouts you follow</div>
         </div>
-        <div data-bs-scroll style="margin-top:12px; display:flex; gap:10px; overflow-x:auto; overflow-y:hidden; padding-bottom:2px">
-          <sc-for list="{{ scouts }}" as="s" hint-placeholder-count="4">
-            <button onClick="{{ s.open }}" style="flex:none; width:76px; display:flex; flex-direction:column; align-items:center; gap:7px; padding:0; border:none; background:none; cursor:pointer; font-family:inherit">
-              <div style="width:52px; height:52px; border-radius:50%; background:{{ s.avBg }}; display:flex; align-items:center; justify-content:center; font-size:16px; font-weight:800; color:#fff">{{ s.initials }}</div>
-              <span style="font-size:11.5px; font-weight:600; color:#14213D; text-align:center; line-height:1.25">{{ s.first }}</span>
-            </button>
-          </sc-for>
-        </div>
+        <sc-if value="{{ scoutsEmpty }}" hint-placeholder-val="{{ true }}">
+          <div style="margin-top:12px; display:flex; align-items:center; gap:13px; padding:15px 16px; border-radius:16px; background:#F9FBFE; border:1px dashed #DCE5F2">
+            <div style="flex:none; width:44px; height:44px; border-radius:50%; background:#EDF3FE; display:flex; align-items:center; justify-content:center"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#1B4BD2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg></div>
+            <div style="flex:1"><div style="font-size:13.5px; font-weight:700; color:#14213D">No scouts yet</div><div style="margin-top:3px; font-size:12.5px; line-height:1.4; color:#5A6B8C">Invite friends — their check-ins are what makes your feed trustworthy.</div></div>
+            <button onClick="{{ inviteFriends }}" style="flex:none; height:38px; padding:0 14px; border:none; border-radius:12px; background:#1B4BD2; color:#fff; font-family:inherit; font-size:12.5px; font-weight:700; cursor:pointer">Invite</button>
+          </div>
+        </sc-if>
         <div style="margin-top:22px; font-size:12.5px; font-weight:700; color:#93A3BF; letter-spacing:.3px; text-transform:uppercase">Your check-ins</div>
         <div style="margin-top:12px; display:flex; flex-direction:column; gap:10px">
           <sc-for list="{{ myCheckins }}" as="c" hint-placeholder-count="3">
@@ -667,6 +677,13 @@ input::placeholder,textarea::placeholder{color:#93A3BF}
         </div>
       </div>
       <div style="margin-top:22px; font-size:16px; font-weight:800; color:#14213D; letter-spacing:-.3px">Who's been</div>
+      <sc-if value="{{ visitorsEmpty }}" hint-placeholder-val="{{ true }}">
+        <div style="margin-top:12px; padding:20px 18px; border-radius:16px; background:#F9FBFE; border:1px dashed #DCE5F2">
+          <div style="font-size:14px; font-weight:700; color:#14213D">No check-ins yet</div>
+          <div style="margin-top:5px; font-size:13px; line-height:1.5; color:#5A6B8C">Nobody has verified this spot. If you're standing here, you can be the first.</div>
+          <button onClick="{{ beFirst }}" style="margin-top:13px; height:42px; padding:0 16px; border:none; border-radius:12px; background:#1B4BD2; color:#fff; font-family:inherit; font-size:13.5px; font-weight:700; cursor:pointer">Check in here</button>
+        </div>
+      </sc-if>
       <div style="margin-top:12px; display:flex; flex-direction:column; gap:14px">
         <sc-for list="{{ visitors }}" as="v" hint-placeholder-count="3">
           <button onClick="{{ v.open }}" style="display:flex; gap:11px; align-items:flex-start; padding:0; border:none; background:none; cursor:pointer; font-family:inherit; text-align:left">
@@ -701,64 +718,6 @@ input::placeholder,textarea::placeholder{color:#93A3BF}
 </div>
 </sc-if>
 
-<!-- ── Page: Scout profile ── -->
-<sc-if value="{{ pageScout }}" hint-placeholder-val="{{ false }}">
-<div data-screen-label="Scout profile" style="position:absolute; inset:0; z-index:20; background:#fff; display:flex; flex-direction:column; animation:bsPush .22s ease-out">
-  <div style="flex:none; padding:8px 14px 0">
-    <sc-if value="{{ ios }}" hint-placeholder-val="{{ true }}"><div style="height:46px"></div></sc-if>
-    <sc-if value="{{ android }}" hint-placeholder-val="{{ false }}"><div style="height:4px"></div></sc-if>
-    <button onClick="{{ pop }}" style="width:44px; height:44px; border:none; border-radius:50%; background:none; display:flex; align-items:center; justify-content:center; cursor:pointer; color:#5A6B8C" style-hover="background:#F1F5FC"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"></path></svg></button>
-  </div>
-  <div data-bs-scroll style="flex:1; overflow-y:auto; padding:6px 22px 24px">
-    <div style="display:flex; align-items:center; gap:15px">
-      <div style="flex:none; width:66px; height:66px; border-radius:50%; background:{{ scout.avBg }}; display:flex; align-items:center; justify-content:center; font-size:22px; font-weight:800; color:#fff">{{ scout.initials }}</div>
-      <div style="flex:1">
-        <div style="font-size:20px; font-weight:800; color:#14213D; letter-spacing:-.3px">{{ scout.name }}</div>
-        <div style="margin-top:3px; font-size:13px; color:#5A6B8C">{{ scout.bio }}</div>
-      </div>
-    </div>
-    <div style="margin-top:16px; display:flex; gap:10px">
-      <button onClick="{{ toggleFollow }}" style="flex:1; height:48px; border:1.5px solid {{ followBd }}; border-radius:15px; background:{{ followBg }}; color:{{ followFg }}; font-family:inherit; font-size:14.5px; font-weight:700; cursor:pointer">{{ followLabel }}</button>
-      <button onClick="{{ messageScout }}" style="flex:none; width:56px; height:48px; border:1.5px solid #DCE5F2; border-radius:15px; background:#fff; display:flex; align-items:center; justify-content:center; cursor:pointer; color:#5A6B8C" style-hover="background:#F6F9FE"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"></path></svg></button>
-    </div>
-    <div style="margin-top:16px; display:flex; gap:10px">
-      <div style="flex:1; padding:13px 14px; border-radius:15px; background:#F6F9FE; border:1px solid #E9F0FB"><div style="font-size:19px; font-weight:800; color:#14213D">{{ scout.visits }}</div><div style="margin-top:2px; font-size:11.5px; color:#5A6B8C">check-ins</div></div>
-      <div style="flex:1; padding:13px 14px; border-radius:15px; background:#F6F9FE; border:1px solid #E9F0FB"><div style="font-size:19px; font-weight:800; color:#14213D">{{ scout.agree }}%</div><div style="margin-top:2px; font-size:11.5px; color:#5A6B8C">taste match</div></div>
-      <div style="flex:1; padding:13px 14px; border-radius:15px; background:#F6F9FE; border:1px solid #E9F0FB"><div style="font-size:19px; font-weight:800; color:#14213D">{{ scout.lists }}</div><div style="margin-top:2px; font-size:11.5px; color:#5A6B8C">lists</div></div>
-    </div>
-    <div style="margin-top:24px; font-size:12.5px; font-weight:700; color:#93A3BF; letter-spacing:.3px; text-transform:uppercase">Recent check-ins</div>
-    <div style="margin-top:12px; display:flex; flex-direction:column; gap:13px">
-      <sc-for list="{{ scoutSpots }}" as="s" hint-placeholder-count="2">
-        <div onClick="{{ s.open }}" style="border-radius:18px; overflow:hidden; background:#fff; border:1px solid #E3EAF6; box-shadow:0 2px 8px rgba(20,33,61,.05); cursor:pointer; font-family:'Plus Jakarta Sans',system-ui,sans-serif" style-hover="border-color:#C9D6EE">
-  <div style="position:relative; height:128px; background:repeating-linear-gradient(135deg,#E7EDF7 0 10px,#DFE7F4 10px 20px); display:flex; align-items:center; justify-content:center">
-    <sc-if value="{{ s.noPhoto }}" hint-placeholder-val="{{ true }}"><span style="font-family:ui-monospace,Menlo,monospace; font-size:10.5px; letter-spacing:.4px; color:#8798B8; text-transform:uppercase">{{ s.slot }}</span></sc-if>
-    {{ s.photoEl }}
-    <div style="position:absolute; top:11px; left:11px; display:flex; align-items:center; gap:5px; padding:5px 10px; border-radius:99px; background:rgba(255,255,255,.94); box-shadow:0 2px 6px rgba(20,33,61,.12)">
-      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#1B4BD2" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg>
-      <span style="font-size:11px; font-weight:700; color:#1B4BD2">{{ s.visits }} real visits</span>
-    </div>
-    <button onClick="{{ s.save }}" style="position:absolute; top:11px; right:11px; width:34px; height:34px; border:none; padding:0; border-radius:50%; background:rgba(255,255,255,.94); display:flex; align-items:center; justify-content:center; box-shadow:0 2px 6px rgba(20,33,61,.12); cursor:pointer">
-      <svg width="17" height="17" viewBox="0 0 24 24" fill="{{ s.heartFill }}" stroke="{{ s.heartStroke }}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"></path></svg>
-    </button>
-  </div>
-  <div style="padding:13px 15px 15px">
-    <div style="display:flex; align-items:baseline; justify-content:space-between; gap:10px">
-      <div style="font-size:15.5px; font-weight:700; color:#14213D">{{ s.name }}</div>
-      <div style="flex:none; font-size:12.5px; font-weight:700; color:#F97A1F">{{ s.dist }}</div>
-    </div>
-    <div style="margin-top:3px; font-size:13px; color:#5A6B8C">{{ s.meta }}</div>
-    <div style="margin-top:11px; display:flex; align-items:center; gap:8px; padding-top:11px; border-top:1px solid #EEF3FA">
-      <div style="width:26px; height:26px; border-radius:50%; background:{{ s.avBg }}; display:flex; align-items:center; justify-content:center; font-size:10.5px; font-weight:800; color:#fff">{{ s.initials }}</div>
-      <div style="font-size:12.5px; line-height:1.4; color:#5A6B8C"><span style="font-weight:700; color:#14213D">{{ s.who }}</span> {{ s.quote }}</div>
-    </div>
-  </div>
-</div>
-      </sc-for>
-    </div>
-  </div>
-</div>
-</sc-if>
-
 <!-- ── Page: Notifications ── -->
 <sc-if value="{{ pageNotifs }}" hint-placeholder-val="{{ false }}">
 <div data-screen-label="Activity" style="position:absolute; inset:0; z-index:20; background:#F6F9FE; display:flex; flex-direction:column; animation:bsPush .22s ease-out">
@@ -772,8 +731,15 @@ input::placeholder,textarea::placeholder{color:#93A3BF}
     </div>
   </div>
   <div data-bs-scroll style="flex:1; overflow-y:auto; padding:14px 22px 20px">
+    <sc-if value="{{ activityEmpty }}" hint-placeholder-val="{{ true }}">
+      <div style="padding:34px 24px; border-radius:18px; background:#fff; border:1px dashed #DCE5F2; text-align:center">
+        <div style="width:52px; height:52px; margin:0 auto; border-radius:16px; background:#F1F5FC; display:flex; align-items:center; justify-content:center"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#93A3BF" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M10.268 21a2 2 0 0 0 3.464 0"></path><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"></path></svg></div>
+        <div style="margin-top:14px; font-size:15px; font-weight:700; color:#14213D">Nothing yet</div>
+        <div style="margin-top:6px; font-size:13px; line-height:1.5; color:#5A6B8C; max-width:250px; margin-left:auto; margin-right:auto">Check-ins from you and the scouts you follow show up here.</div>
+      </div>
+    </sc-if>
     <div style="display:flex; flex-direction:column; gap:10px">
-      <sc-for list="{{ notifs }}" as="n" hint-placeholder-count="4">
+      <sc-for list="{{ notifs }}" as="n" hint-placeholder-count="0">
         <button onClick="{{ n.open }}" style="display:flex; gap:12px; align-items:flex-start; padding:14px 15px; border:1px solid {{ n.bd }}; border-radius:16px; background:{{ n.bg }}; cursor:pointer; font-family:inherit; text-align:left" style-hover="border-color:#C9D6EE">
           <div style="flex:none; width:38px; height:38px; border-radius:50%; background:{{ n.avBg }}; display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:800; color:#fff">{{ n.initials }}</div>
           <div style="flex:1">
@@ -1023,34 +989,6 @@ input::placeholder,textarea::placeholder{color:#93A3BF}
 </div>
 </sc-if>
 
-<!-- ── Page: Message thread ── -->
-<sc-if value="{{ pageThread }}" hint-placeholder-val="{{ false }}">
-<div data-screen-label="Messages" style="position:absolute; inset:0; z-index:25; background:#F6F9FE; display:flex; flex-direction:column; animation:bsPush .22s ease-out">
-  <div style="flex:none; padding:8px 14px 12px; background:#fff; border-bottom:1px solid #E9F0FB">
-    <sc-if value="{{ ios }}" hint-placeholder-val="{{ true }}"><div style="height:46px"></div></sc-if>
-    <sc-if value="{{ android }}" hint-placeholder-val="{{ false }}"><div style="height:4px"></div></sc-if>
-    <div style="display:flex; align-items:center; gap:10px">
-      <button onClick="{{ pop }}" style="flex:none; width:40px; height:44px; border:none; background:none; display:flex; align-items:center; justify-content:center; cursor:pointer; color:#5A6B8C"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"></path></svg></button>
-      <div style="flex:none; width:38px; height:38px; border-radius:50%; background:{{ scout.avBg }}; display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:800; color:#fff">{{ scout.initials }}</div>
-      <div style="flex:1"><div style="font-size:15px; font-weight:700; color:#14213D">{{ scout.name }}</div><div style="margin-top:1px; font-size:11.5px; color:#93A3BF">{{ scout.bio }}</div></div>
-    </div>
-  </div>
-  <div data-bs-scroll style="flex:1; overflow-y:auto; padding:18px 20px">
-    <div style="display:flex; flex-direction:column; gap:10px">
-      <sc-for list="{{ messages }}" as="m" hint-placeholder-count="3">
-        <div style="display:flex; justify-content:{{ m.align }}">
-          <div style="max-width:76%; padding:11px 14px; border-radius:{{ m.radius }}; background:{{ m.bg }}; color:{{ m.fg }}; font-size:14px; line-height:1.45">{{ m.text }}</div>
-        </div>
-      </sc-for>
-    </div>
-  </div>
-  <div style="flex:none; display:flex; align-items:center; gap:9px; padding:12px 18px 28px; background:#fff; border-top:1px solid #E9F0FB">
-    <input placeholder="Message…" value="{{ draft }}" onChange="{{ draftChange }}" onKeyDown="{{ draftKey }}" style="flex:1; min-width:0; height:48px; padding:0 16px; border:1.5px solid #DCE5F2; border-radius:99px; background:#F9FBFE; font-family:inherit; font-size:14.5px; color:#14213D; outline:none" style-focus="border-color:#1B4BD2; background:#fff">
-    <button onClick="{{ sendMsg }}" style="flex:none; width:48px; height:48px; border:none; border-radius:50%; background:{{ sendBg }}; display:flex; align-items:center; justify-content:center; cursor:pointer"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4Z"></path><path d="M22 2 11 13"></path></svg></button>
-  </div>
-</div>
-</sc-if>
-
 <!-- ── Sheet: new list ── -->
 <sc-if value="{{ newListOpen }}" hint-placeholder-val="{{ false }}">
 <div style="position:absolute; inset:0; z-index:40; background:rgba(10,18,38,.4); display:flex; align-items:flex-end">
@@ -1178,7 +1116,7 @@ class Component extends DCLogic {
     query: '', recent: ['nasi lemak', 'kopitiam', 'char kuey teow'],
     ci: null, ciPhoto: null, ciVerdict: null, ciNote: '', ciDone: false,
     np: { name: '', cuisine: null, price: null, halal: null, photo: null }, addDone: false, newId: null,
-    newListOpen: false, nlName: '', nlPriv: 0, addSpotsOpen: false, draft: '',
+    newListOpen: false, nlName: '', nlPriv: 0, addSpotsOpen: false,
     toast: '', notifsRead: false, cityPicker: false, install: false, installSeen: false,
     cfgOpen: false, cfgText: '', cfgErr: '',
   };
@@ -1207,23 +1145,9 @@ class Component extends DCLogic {
     { code: 'PG', label: 'Penang' },
     { code: 'JB', label: 'Johor Bahru' },
   ];
-  SCOUTS = [
-    { id: 'f1', name: 'Aisyah Rahman', first: 'Aisyah', initials: 'AR', avBg: '#1B4BD2', bio: 'Bangsar · breakfast specialist', visits: 64, agree: 91, lists: 5, spots: ['s1', 's5'] },
-    { id: 'f2', name: 'Wei Jun Tan', first: 'Wei Jun', initials: 'WJ', avBg: '#2E8FE0', bio: 'KL · kopitiam completist', visits: 88, agree: 84, lists: 7, spots: ['s2', 's9'] },
-    { id: 'f3', name: 'Daniel Lim', first: 'Daniel', initials: 'DL', avBg: '#F97A1F', bio: 'Subang · will drive for roti', visits: 41, agree: 77, lists: 3, spots: ['s3'] },
-    { id: 'f4', name: 'Priya Kumar', first: 'Priya', initials: 'PK', avBg: '#2E8FE0', bio: 'Penang · hawker maps in her head', visits: 132, agree: 88, lists: 9, spots: ['s6', 's7'] },
-    { id: 'f5', name: 'Nurul Aina', first: 'Nurul', initials: 'NA', avBg: '#F97A1F', bio: 'JB · kacang pool loyalist', visits: 57, agree: 82, lists: 4, spots: ['s8'] },
-  ];
   LISTS = [
     { id: 'l1', name: 'Want to try', note: 'Private', spots: ['s4', 's6'] },
     { id: 'l2', name: 'Kopitiam runs', note: 'Shared with 3 friends', spots: ['s2'] },
-  ];
-  NOTIFS = [
-    { id: 'n1', who: 'Aisyah', initials: 'AR', avBg: '#1B4BD2', text: 'checked in at Warung Pak Din — a few minutes from you.', when: '12 min ago', spot: 's1' },
-    { id: 'n2', who: 'Priya', initials: 'PK', avBg: '#2E8FE0', text: 'added Lorong Selamat CKT to Best of Penang.', when: '2 h ago', spot: 's6' },
-    { id: 'n3', who: 'Wei Jun', initials: 'WJ', avBg: '#2E8FE0', text: 'agreed with your take on Kopi & Kaya House.', when: 'Yesterday', spot: 's2' },
-    { id: 'n4', who: 'Daniel', initials: 'DL', avBg: '#F97A1F', text: 'started following you.', when: '2 d ago', spot: 's3' },
-    { id: 'n5', who: 'Nurul', initials: 'NA', avBg: '#F97A1F', text: 'checked in at Kacang Pool Haji — would go again.', when: '3 d ago', spot: 's8' },
   ];
   FACTS_ICONS = [
     { key: 'hours', label: 'Opens', d1: 'M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z', d2: 'M12 6v6l4 2' },
@@ -1239,8 +1163,69 @@ class Component extends DCLogic {
   }
   componentDidUpdate(pp) {
     if (pp && (pp.startPhase !== this.props.startPhase || pp.startTab !== this.props.startTab)) this.applyProps();
+    this.syncMap();
   }
-  componentWillUnmount() { if (this._un) this._un(); clearTimeout(this._t); clearTimeout(this._g); clearTimeout(this._toast); }
+  mapRef = React.createRef();
+  OSM_STYLE = {
+    version: 8,
+    sources: { osm: { type: 'raster', tiles: ['https://tile.openstreetmap.org/{z}/{x}/{y}.png'], tileSize: 256,
+      attribution: '© OpenStreetMap contributors', maxzoom: 19 } },
+    layers: [{ id: 'osm', type: 'raster', source: 'osm' }],
+  };
+  syncMap() {
+    const visible = this.state.phase === 'app' && this.state.tab === 1 && this.state.nearbyMode === 'map' && !this.state.stack.length;
+    const el = this.mapRef.current;
+    if (!visible || !el) return;
+    if (!window.maplibregl) { clearTimeout(this._mapWait); this._mapWait = setTimeout(() => this.syncMap(), 400); return; }
+    const here = BS.geo.pos || BS.store.origin || { lat: 3.1319, lng: 101.6841 };
+    if (!this._map) {
+      this._map = new maplibregl.Map({ container: el, style: this.OSM_STYLE,
+        center: [here.lng, here.lat], zoom: 14, attributionControl: { compact: true } });
+      this._map.on('load', () => { this._mapReady = true; this.forceUpdate(); this.drawMarkers(true); });
+      this._markers = [];
+    } else {
+      this._map.resize();
+      this.drawMarkers(false);
+    }
+  }
+  drawMarkers(fit) {
+    if (!this._map || !this._mapReady) return;
+    const spots = this.inRegion(this.state.city);
+    const key = spots.map(s => s.id).join(',') + '|' + this.state.pin + '|' + (BS.geo.pos ? BS.geo.pos.lat.toFixed(4) : '');
+    if (key === this._markerKey && !fit) return;
+    this._markerKey = key;
+    (this._markers || []).forEach(m => m.remove());
+    this._markers = [];
+    const bounds = new maplibregl.LngLatBounds();
+    const active = this.state.pin || (spots[0] && spots[0].id);
+    spots.forEach(s => {
+      const on = s.id === active;
+      const el = document.createElement('button');
+      el.type = 'button';
+      el.style.cssText = 'display:flex;align-items:center;gap:5px;height:32px;padding:0 11px 0 8px;border:none;border-radius:99px;cursor:pointer;' +
+        'font:700 12px/1 "Plus Jakarta Sans",system-ui,sans-serif;box-shadow:0 3px 10px rgba(20,33,61,.28);' +
+        (on ? 'background:#1B4BD2;color:#fff;' : 'background:#fff;color:#14213D;');
+      el.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="' + (on ? '#fff' : '#1B4BD2') +
+        '" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><span>' +
+        s.name.replace(/[<>&]/g, '') + '</span>';
+      el.addEventListener('click', ev => { ev.stopPropagation(); this.setState({ pin: s.id }); });
+      this._markers.push(new maplibregl.Marker({ element: el, anchor: 'bottom' }).setLngLat([s.lng, s.lat]).addTo(this._map));
+      bounds.extend([s.lng, s.lat]);
+    });
+    const me = BS.geo.pos;
+    if (me) {
+      const dot = document.createElement('div');
+      dot.style.cssText = 'width:18px;height:18px;border-radius:50%;background:#2E8FE0;border:3px solid #fff;box-shadow:0 2px 8px rgba(20,33,61,.35)';
+      this._markers.push(new maplibregl.Marker({ element: dot }).setLngLat([me.lng, me.lat]).addTo(this._map));
+      bounds.extend([me.lng, me.lat]);
+    }
+    if (fit && !bounds.isEmpty()) this._map.fitBounds(bounds, { padding: { top: 70, bottom: 190, left: 50, right: 50 }, maxZoom: 16, duration: 0 });
+  }
+  componentWillUnmount() {
+    if (this._un) this._un();
+    clearTimeout(this._t); clearTimeout(this._g); clearTimeout(this._toast); clearTimeout(this._mapWait);
+    if (this._map) { this._map.remove(); this._map = null; }
+  }
   applyProps() {
     const p = this.props, next = {};
     if (p.startPhase) next.phase = p.startPhase === 'App' ? 'app' : 'onboard';
@@ -1306,7 +1291,6 @@ class Component extends DCLogic {
     const pinId = S.pin || (regionSpots[0] && regionSpots[0].id);
     const spotId = top.p === 'spot' ? top.id : (S.ci || pinId);
     const spotRaw = this.find(spotId) || this.all()[0] || {};
-    const scoutRaw = this.SCOUTS.find(s => s.id === top.id) || this.SCOUTS[0];
     const listRaw = this.allLists().find(l => l.id === top.id) || this.LISTS[0];
     const q = S.query.trim().toLowerCase();
     const results = q ? this.all().filter(s => (s.name + ' ' + s.cuisine + ' ' + s.area).toLowerCase().includes(q)) : [];
@@ -1350,10 +1334,17 @@ class Component extends DCLogic {
       gIdle: !S.gLoading, gLoading: S.gLoading,
       googleSignIn: () => {
         if (S.gLoading) return;
+        if (!BS.cloud.on) { this.setState({ cfgOpen: true, cfgText: '', cfgErr: '' }); this.flash('Connect Firebase for Google sign-in'); return; }
         this.setState({ gLoading: true });
-        BS.signInGoogle().then(() => this.setState({ gLoading: false, phase: 'app', install: !S.installSeen, installSeen: true }))
-          .catch(() => this.setState({ gLoading: false }));
+        BS.signInGoogle().then(r => {
+          if (r && r.needsCloud) return this.setState({ gLoading: false, cfgOpen: true });
+          this.setState({ gLoading: false, phase: 'app', install: !S.installSeen, installSeen: true });
+        }).catch(() => this.setState({ gLoading: false }));
       },
+      cloudReady: BS.cloud.on, cloudNotReady: !BS.cloud.on,
+      authNote: BS.cloud.on ? 'Signed in with your Google account via Firebase.' : 'Google and email sign-in need Firebase connected. You can start on this device and connect later.',
+      continueLocal: () => { BS.signInLocal('You'); this.setState({ phase: 'app', install: !S.installSeen, installSeen: true }); },
+      openCfgFromAuth: () => this.setState({ cfgOpen: true, cfgText: '', cfgErr: '' }),
       otherEmail: () => this.setState({ auth: 'form' }),
       enterApp: () => this.setState({ phase: 'app', install: !S.installSeen, installSeen: true }),
 
@@ -1398,10 +1389,19 @@ class Component extends DCLogic {
       listBtnBg: S.nearbyMode === 'list' ? '#fff' : 'transparent', listBtnFg: S.nearbyMode === 'list' ? '#1B4BD2' : '#5A6B8C',
       showMap: () => this.setState({ nearbyMode: 'map' }), showList: () => this.setState({ nearbyMode: 'list' }),
       nearbyMap: S.nearbyMode === 'map', nearbyList: S.nearbyMode === 'list',
+      mapRef: this.mapRef, mapLoading: !this._mapReady,
+      recenterMap: () => {
+        BS.requestGeo().then(() => {
+          const p = BS.geo.pos || BS.store.origin;
+          if (this._map && p) this._map.easeTo({ center: [p.lng, p.lat], zoom: 15, duration: 500 });
+          this.drawMarkers(false);
+        });
+      },
       cityPills: this.REGIONS.map(r => ({ label: r.label, bg: r.code === S.city ? '#1B4BD2' : '#fff', fg: r.code === S.city ? '#fff' : '#5A6B8C',
         bd: r.code === S.city ? '#1B4BD2' : '#DCE5F2', pick: () => this.setState({ city: r.code, pin: (this.inRegion(r.code)[0] || {}).id || null }) })),
       pins: regionSpots.slice(0, 3).map((s, i) => ({ label: s.name.split(' ')[0], x: [118, 44, 196][i], y: [196, 356, 440][i],
         bg: pinId === s.id ? '#1B4BD2' : '#fff', fg: pinId === s.id ? '#fff' : '#14213D', pick: () => this.setState({ pin: s.id }) })),
+      mapFly: id => { const s = this.find(id); if (this._map && s) this._map.easeTo({ center: [s.lng, s.lat], duration: 400 }); },
       activePin: this.card(this.find(pinId) || regionSpots[0] || {}),
       openActivePin: () => this.push('spot', pinId),
       citySpots: regionSpots.map(s => this.card(s)),
@@ -1433,13 +1433,18 @@ class Component extends DCLogic {
       newList: () => this.setState({ newListOpen: true, nlName: '', nlPriv: 0 }),
       savedSpots: savedIds.map(id => this.card(this.find(id))), savedEmpty: savedIds.length === 0,
 
-      scouts: this.SCOUTS.map(f => ({ first: f.first, initials: f.initials, avBg: f.avBg, open: () => this.push('scout', f.id) })),
+      scouts: [], scoutsEmpty: true,
+      inviteFriends: () => {
+        const txt = 'Join me on biteScout — real visits only, no fake reviews. ' + location.href;
+        if (navigator.share) navigator.share({ title: 'biteScout', text: txt }).catch(() => {});
+        else { try { navigator.clipboard.writeText(txt); } catch (e) {} this.flash('Invite link copied'); }
+      },
       myCheckins: myCi.map(c => { const s = this.find(c.spotId) || {};
         return { name: s.name || 'A spot', when: this.ago(c.createdAt), verdict: c.verdict, open: () => this.push('spot', c.spotId) }; }),
 
-      pageSearch: top.p === 'search', pageSpot: top.p === 'spot', pageScout: top.p === 'scout',
+      pageSearch: top.p === 'search', pageSpot: top.p === 'spot',
       pageNotifs: top.p === 'notifs', pageSettings: top.p === 'settings', pageList: top.p === 'list',
-      pageAdd: top.p === 'addplace', pageThread: top.p === 'thread',
+      pageAdd: top.p === 'addplace',
       pop: () => this.pop(),
       overlayTop: ios ? 56 : 14,
 
@@ -1458,16 +1463,14 @@ class Component extends DCLogic {
 
       spot: { ...this.card(spotRaw), again: spotRaw.again },
       spotTags: (spotRaw.tags || []).map(t => ({ label: t })),
-      visitors: (() => {
-        const real = BS.store.checkins.filter(c => c.spotId === spotRaw.id).slice(-3).reverse().map(c => ({
-          who: (ST.user && ST.user.name) || 'You', initials: me.initials, avBg: '#1B4BD2',
-          when: this.ago(c.createdAt), quote: c.note || (c.verdict === 'Definitely' ? 'Would go again.' : c.verdict === 'Maybe' ? 'Worth a try.' : 'Not for me.'),
-          open: () => this.setState({ tab: 4, stack: [] }) }));
-        const mock = this.SCOUTS.filter(f => (f.spots || []).includes(spotRaw.id)).map((f, i) => ({
-          who: f.name, initials: f.initials, avBg: f.avBg, when: ['2 d ago', '5 d ago', '1 w ago'][i] || '1 w ago',
-          quote: spotRaw.quote, open: () => this.push('scout', f.id) }));
-        return real.concat(mock).slice(0, 4);
-      })(),
+      visitors: BS.checkinsFor(spotRaw.id).slice(0, 6).map(c => ({
+        who: c.userId === ((ST.user && ST.user.uid) || 'local') ? 'You' : (c.userName || 'A scout'),
+        initials: c.userInitials || 'ME', avBg: c.userId === ((ST.user && ST.user.uid) || 'local') ? '#1B4BD2' : '#2E8FE0',
+        when: this.ago(c.createdAt),
+        quote: c.note || (c.verdict === 'Definitely' ? 'Would go again.' : c.verdict === 'Maybe' ? 'Worth a try.' : 'Not again.'),
+        open: () => this.setState({ tab: 4, stack: [] }) })),
+      visitorsEmpty: BS.checkinsFor(spotRaw.id).length === 0,
+      beFirst: () => this.openCi(spotRaw.id),
       facts: this.FACTS_ICONS.map(f => ({ ...f, value: f.key === 'hours' ? spotRaw.hours : f.key === 'price' ? 'RM' + spotRaw.priceNum + ' pp' : spotRaw.halal })),
       saveActive: () => this.toggleSave(spotRaw.id),
       shareSpot: () => {
@@ -1477,25 +1480,15 @@ class Component extends DCLogic {
       },
       startCheckIn: () => this.openCi(spotRaw.id),
 
-      scout: { ...scoutRaw }, scoutSpots: (scoutRaw.spots || []).map(id => this.find(id)).filter(Boolean).map(s => this.card(s)),
-      followLabel: ST.following[scoutRaw.id] ? 'Following' : 'Follow',
-      followBg: ST.following[scoutRaw.id] ? '#EDF3FE' : '#1B4BD2',
-      followFg: ST.following[scoutRaw.id] ? '#1B4BD2' : '#fff',
-      followBd: ST.following[scoutRaw.id] ? '#D7E5FA' : '#1B4BD2',
-      toggleFollow: () => { const on = !ST.following[scoutRaw.id]; BS.setFollow(scoutRaw.id, on);
-        this.flash(on ? 'Following ' + scoutRaw.first : 'Unfollowed ' + scoutRaw.first); },
-      messageScout: () => this.push('thread', scoutRaw.id),
-      messages: (ST.msgs[scoutRaw.id] || this.seedMsgs(scoutRaw)).map(m => ({ text: m.text,
-        align: m.me ? 'flex-end' : 'flex-start', bg: m.me ? '#1B4BD2' : '#fff', fg: m.me ? '#fff' : '#14213D',
-        radius: m.me ? '16px 16px 5px 16px' : '16px 16px 16px 5px' })),
-      draft: S.draft, draftChange: e => this.setState({ draft: e.target.value }),
-      draftKey: e => { if (e.key === 'Enter') this.sendMsg(scoutRaw); },
-      sendMsg: () => this.sendMsg(scoutRaw),
-      sendBg: S.draft.trim() ? '#1B4BD2' : '#C9D6EE',
 
-      notifs: this.NOTIFS.map((n, i) => ({ ...n, unread: !S.notifsRead && i < 3,
-        bg: !S.notifsRead && i < 3 ? '#fff' : '#F9FBFE', bd: !S.notifsRead && i < 3 ? '#D7E5FA' : '#E9F0FB',
-        open: () => this.push('spot', n.spot) })),
+      notifs: BS.activity().map((c, i) => { const s = this.find(c.spotId) || {};
+        const mine = c.userId === ((BS.store.user && BS.store.user.uid) || 'local');
+        return { id: c.id, who: mine ? 'You' : (c.userName || 'A scout'), initials: c.userInitials || 'ME', avBg: mine ? '#1B4BD2' : '#2E8FE0',
+          text: 'checked in at ' + (s.name || 'a spot') + (c.verdict === 'Definitely' ? ' — would go again.' : c.verdict === 'Nope' ? ' — not again.' : '.'),
+          when: this.ago(c.createdAt), unread: !S.notifsRead && i < 2,
+          bg: !S.notifsRead && i < 2 ? '#fff' : '#F9FBFE', bd: !S.notifsRead && i < 2 ? '#D7E5FA' : '#E9F0FB',
+          open: () => this.push('spot', c.spotId) }; }),
+      activityEmpty: BS.activity().length === 0,
       markRead: () => { this.setState({ notifsRead: true }); this.flash('All caught up'); },
 
       settingRows: [
@@ -1584,27 +1577,16 @@ class Component extends DCLogic {
     this.setState({ newListOpen: false, nlName: '' });
     this.flash('List "' + name + '" created');
   }
-  seedMsgs(scout) {
-    return [
-      { me: false, text: 'Eh, you tried any of my spots already?' },
-      { me: true, text: 'Two so far — the one you checked in last week was solid.' },
-      { me: false, text: 'Go early ah, before 9am. Less queue.' },
-    ];
-  }
-  sendMsg(scout) {
-    const t = this.state.draft.trim();
-    if (!t) return;
-    const cur = BS.store.msgs[scout.id] || this.seedMsgs(scout);
-    BS.store.msgs[scout.id] = cur;
-    BS.pushMsg(scout.id, { me: true, text: t });
-    this.setState({ draft: '' });
-  }
   openCi(id) { this.setState({ ci: id, ciDone: false, ciPhoto: null, ciVerdict: null, ciNote: '' }); }
   submitEmail() {
-    const ok = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(this.state.email.trim());
+    const email = this.state.email.trim();
+    const ok = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email);
     if (!ok) return this.setState({ emailErr: true });
-    BS.signInEmailLink(this.state.email.trim());
-    this.setState({ auth: 'sent', emailErr: false });
+    if (!BS.cloud.on) { this.setState({ cfgOpen: true, cfgText: '', cfgErr: '' }); this.flash('Connect Firebase to send sign-in links'); return; }
+    BS.signInEmailLink(email).then(r => {
+      if (r && r.needsCloud) return this.setState({ cfgOpen: true });
+      this.setState({ auth: 'sent', emailErr: false });
+    });
   }
 }
 </script>

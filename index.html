@@ -256,8 +256,11 @@ input::placeholder,textarea::placeholder{color:#93A3BF}
       <sc-if value="{{ feedEmpty }}" hint-placeholder-val="{{ false }}">
         <div style="margin-top:14px; padding:28px 22px; border-radius:18px; background:#fff; border:1px dashed #DCE5F2; text-align:center">
           <div style="font-size:14.5px; font-weight:700; color:#14213D">Nothing matches those filters</div>
-          <div style="margin-top:6px; font-size:13px; line-height:1.5; color:#5A6B8C">Try clearing a filter — or be the first to check in here.</div>
-          <button onClick="{{ clearChips }}" style="margin-top:14px; height:42px; padding:0 18px; border:none; border-radius:13px; background:#1B4BD2; color:#fff; font-family:inherit; font-size:13.5px; font-weight:700; cursor:pointer">Clear filters</button>
+          <div style="margin-top:6px; font-size:13px; line-height:1.5; color:#5A6B8C">Nothing matches within {{ cityShort }}. Widen the radius or clear the filter.</div>
+          <div style="margin-top:14px; display:flex; gap:9px; justify-content:center">
+            <button onClick="{{ clearChips }}" style="height:42px; padding:0 16px; border:1.5px solid #DCE5F2; border-radius:13px; background:#fff; color:#5A6B8C; font-family:inherit; font-size:13.5px; font-weight:700; cursor:pointer">Clear filter</button>
+            <button onClick="{{ widenRadius }}" style="height:42px; padding:0 16px; border:none; border-radius:13px; background:#1B4BD2; color:#fff; font-family:inherit; font-size:13.5px; font-weight:700; cursor:pointer">Search everywhere</button>
+          </div>
         </div>
       </sc-if>
       <div style="margin-top:12px; display:flex; flex-direction:column; gap:13px">
@@ -326,8 +329,14 @@ input::placeholder,textarea::placeholder{color:#93A3BF}
           <button onClick="{{ showList }}" style="height:32px; padding:0 13px; border:none; border-radius:9px; font-family:inherit; font-size:12.5px; font-weight:700; cursor:pointer; background:{{ listBtnBg }}; color:{{ listBtnFg }}">List</button>
         </div>
       </div>
-      <div data-bs-scroll style="margin-top:11px; display:flex; gap:7px; overflow-x:auto; overflow-y:hidden">
-        <sc-for list="{{ cityPills }}" as="c" hint-placeholder-count="3">
+      <div style="margin-top:11px; display:flex; align-items:center; gap:9px; height:44px; padding:0 14px; border-radius:14px; background:#F1F5FC; border:1px solid #E3EAF6">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#93A3BF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
+        <input placeholder="Search this area" value="{{ mapQuery }}" onChange="{{ mapQueryChange }}" style="flex:1; min-width:0; border:none; background:none; outline:none; font-family:inherit; font-size:14px; color:#14213D">
+        <sc-if value="{{ mapHasQuery }}" hint-placeholder-val="{{ false }}"><button onClick="{{ clearMapQuery }}" style="flex:none; width:22px; height:22px; padding:0; border:none; border-radius:50%; background:#DCE5F2; display:flex; align-items:center; justify-content:center; cursor:pointer"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#5A6B8C" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg></button></sc-if>
+      </div>
+      <div data-bs-scroll style="margin-top:10px; display:flex; align-items:center; gap:7px; overflow-x:auto; overflow-y:hidden">
+        <span style="flex:none; font-size:11px; font-weight:700; letter-spacing:.3px; color:#93A3BF; text-transform:uppercase">Within</span>
+        <sc-for list="{{ cityPills }}" as="c" hint-placeholder-count="4">
           <button onClick="{{ c.pick }}" style="flex:none; height:34px; padding:0 13px; border-radius:99px; border:1px solid {{ c.bd }}; background:{{ c.bg }}; color:{{ c.fg }}; font-family:inherit; font-size:12.5px; font-weight:700; cursor:pointer; white-space:nowrap">{{ c.label }}</button>
         </sc-for>
       </div>
@@ -341,7 +350,25 @@ input::placeholder,textarea::placeholder{color:#93A3BF}
             <span style="font-size:12.5px; font-weight:600; color:#5A6B8C">Loading map…</span>
           </div>
         </sc-if>
-        <button onClick="{{ recenterMap }}" style="position:absolute; top:14px; right:14px; z-index:5; width:42px; height:42px; border:none; border-radius:13px; background:rgba(255,255,255,.95); display:flex; align-items:center; justify-content:center; cursor:pointer; color:#1B4BD2; box-shadow:0 3px 10px rgba(20,33,61,.16)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M12 2v3"></path><path d="M12 19v3"></path><path d="M2 12h3"></path><path d="M19 12h3"></path></svg></button>
+        <button onClick="{{ toggleFollow }}" style="position:absolute; top:14px; right:14px; z-index:6; width:42px; height:42px; border:none; border-radius:13px; background:{{ followBg }}; color:{{ followFg }}; display:flex; align-items:center; justify-content:center; cursor:pointer; box-shadow:0 3px 10px rgba(20,33,61,.16)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M12 2v3"></path><path d="M12 19v3"></path><path d="M2 12h3"></path><path d="M19 12h3"></path></svg></button>
+        <sc-if value="{{ followOff }}" hint-placeholder-val="{{ false }}">
+          <button onClick="{{ recenterMap }}" style="position:absolute; top:66px; right:14px; z-index:6; display:flex; align-items:center; gap:6px; height:36px; padding:0 12px; border:none; border-radius:12px; background:rgba(20,33,61,.86); color:#fff; font-family:inherit; font-size:12px; font-weight:700; cursor:pointer; box-shadow:0 3px 10px rgba(20,33,61,.2)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 11 22 2 13 21 11 13 3 11"></polygon></svg><span>Follow me</span></button>
+        </sc-if>
+        <sc-if value="{{ mapHasQuery }}" hint-placeholder-val="{{ false }}">
+          <div style="position:absolute; top:14px; left:14px; right:66px; z-index:7; border-radius:16px; overflow:hidden; background:#fff; box-shadow:0 8px 24px rgba(20,33,61,.2)">
+            <sc-for list="{{ mapResults }}" as="r" hint-placeholder-count="2">
+              <button onClick="{{ r.pick }}" style="display:flex; align-items:center; gap:11px; width:100%; padding:12px 14px; border:none; border-bottom:1px solid #F1F5FC; background:#fff; cursor:pointer; font-family:inherit; text-align:left" style-hover="background:#F9FBFE">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1B4BD2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                <div style="flex:1; min-width:0"><div style="font-size:13.5px; font-weight:700; color:#14213D; white-space:nowrap; overflow:hidden; text-overflow:ellipsis">{{ r.name }}</div><div style="margin-top:2px; font-size:11.5px; color:#93A3BF; white-space:nowrap; overflow:hidden; text-overflow:ellipsis">{{ r.meta }}</div></div>
+                <span style="flex:none; font-size:12px; font-weight:700; color:#F97A1F">{{ r.dist }}</span>
+              </button>
+            </sc-for>
+            <sc-if value="{{ mapNoResults }}" hint-placeholder-val="{{ false }}">
+              <div style="padding:14px; font-size:13px; color:#5A6B8C">No spot matches that yet.</div>
+            </sc-if>
+          </div>
+        </sc-if>
+        <sc-if value="{{ hasActivePin }}" hint-placeholder-val="{{ true }}">
         <div style="position:absolute; left:16px; right:16px; bottom:16px; padding:15px 16px; border-radius:18px; background:#fff; border:1px solid #E3EAF6; box-shadow:0 8px 24px rgba(20,33,61,.14)">
           <div style="display:flex; align-items:center; justify-content:space-between; gap:10px">
             <div>
@@ -355,11 +382,28 @@ input::placeholder,textarea::placeholder{color:#93A3BF}
             <span style="font-size:12.5px; font-weight:600; color:#4C689E">{{ activePin.visitLabel }} · 0 paid placements</span>
           </div>
         </div>
+        </sc-if>
+        <sc-if value="{{ nearbyEmpty }}" hint-placeholder-val="{{ false }}">
+          <div style="position:absolute; left:16px; right:16px; bottom:16px; padding:16px; border-radius:18px; background:#fff; border:1px solid #E3EAF6; box-shadow:0 8px 24px rgba(20,33,61,.14)">
+            <div style="font-size:14.5px; font-weight:700; color:#14213D">No spots within {{ cityShort }}</div>
+            <div style="margin-top:4px; font-size:12.5px; line-height:1.45; color:#5A6B8C">Widen the radius, or add the place you're standing at.</div>
+            <div style="margin-top:12px; display:flex; gap:9px">
+              <button onClick="{{ widenRadius }}" style="flex:1; height:44px; border:none; border-radius:13px; background:#1B4BD2; color:#fff; font-family:inherit; font-size:13.5px; font-weight:700; cursor:pointer">Search everywhere</button>
+              <button onClick="{{ addPlace }}" style="flex:1; height:44px; border:1.5px solid #DCE5F2; border-radius:13px; background:#fff; color:#1B4BD2; font-family:inherit; font-size:13.5px; font-weight:700; cursor:pointer">Add a place</button>
+            </div>
+          </div>
+        </sc-if>
       </div>
     </sc-if>
     <sc-if value="{{ nearbyList }}" hint-placeholder-val="{{ false }}">
       <div data-bs-scroll style="flex:1; overflow-y:auto; padding:14px 22px 20px">
-        <div style="font-size:12.5px; font-weight:700; color:#93A3BF; letter-spacing:.3px; text-transform:uppercase">Sorted by distance</div>
+        <div style="font-size:12.5px; font-weight:700; color:#93A3BF; letter-spacing:.3px; text-transform:uppercase">Sorted by distance · within {{ cityShort }}</div>
+        <sc-if value="{{ nearbyEmpty }}" hint-placeholder-val="{{ false }}">
+          <div style="margin-top:14px; padding:28px 22px; border-radius:18px; background:#fff; border:1px dashed #DCE5F2; text-align:center">
+            <div style="font-size:14.5px; font-weight:700; color:#14213D">Nothing within {{ cityShort }}</div>
+            <button onClick="{{ widenRadius }}" style="margin-top:12px; height:42px; padding:0 18px; border:none; border-radius:13px; background:#1B4BD2; color:#fff; font-family:inherit; font-size:13.5px; font-weight:700; cursor:pointer">Search everywhere</button>
+          </div>
+        </sc-if>
         <div style="margin-top:12px; display:flex; flex-direction:column; gap:13px">
           <sc-for list="{{ citySpots }}" as="s" hint-placeholder-count="4">
             <div onClick="{{ s.open }}" style="border-radius:18px; overflow:hidden; background:#fff; border:1px solid #E3EAF6; box-shadow:0 2px 8px rgba(20,33,61,.05); cursor:pointer; font-family:'Plus Jakarta Sans',system-ui,sans-serif" style-hover="border-color:#C9D6EE">
@@ -1144,7 +1188,7 @@ input::placeholder,textarea::placeholder{color:#93A3BF}
 <div style="position:absolute; inset:0; z-index:40; background:rgba(10,18,38,.4); display:flex; align-items:flex-end">
   <div onClick="{{ noop }}" style="width:100%; padding:20px 22px 34px; border-radius:24px 24px 0 0; background:#fff; animation:bsSheet .26s cubic-bezier(.22,.9,.3,1)">
     <div style="width:38px; height:4px; margin:0 auto 16px; border-radius:99px; background:#DCE5F2"></div>
-    <div style="font-size:17px; font-weight:800; color:#14213D">Where are you scouting?</div>
+    <div style="font-size:17px; font-weight:800; color:#14213D">How far are you willing to go?</div>
     <div style="margin-top:14px; display:flex; flex-direction:column; gap:8px">
       <sc-for list="{{ cityOptions }}" as="c" hint-placeholder-count="3">
         <button onClick="{{ c.pick }}" style="display:flex; align-items:center; gap:11px; padding:14px 15px; border:1.5px solid {{ c.bd }}; border-radius:15px; background:{{ c.bg }}; cursor:pointer; font-family:inherit; text-align:left">
@@ -1192,7 +1236,7 @@ class Component extends DCLogic {
   state = {
     platform: 'android', phase: 'onboard',
     ob: 0, loc: 'idle', dlg: false, email: '', emailErr: false, auth: 'form', gLoading: false,
-    tab: 0, stack: [], city: 'near', chip: 0, nearbyMode: 'map', pin: null,
+    tab: 0, stack: [], city: '2000', chip: 0, nearbyMode: 'map', pin: null, mapQuery: '', mapFollow: true,
     query: '', recent: ['nasi lemak', 'kopitiam', 'char kuey teow'],
     ci: null, ciPhoto: null, ciVerdict: null, ciNote: '', ciDone: false,
     np: { name: '', cuisine: null, price: null, halal: null, photo: null }, addDone: false, newId: null,
@@ -1220,10 +1264,11 @@ class Component extends DCLogic {
     { label: 'Maybe', d1: 'M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z', d2: 'M8 12h8' },
     { label: 'Nope', d1: 'M17 14V2', d2: 'M9 18.12 10 14H4.17a2 2 0 0 1-1.92-2.56l2.33-8A2 2 0 0 1 6.5 2H20a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-2.76a2 2 0 0 0-1.79 1.11L12 22a3.13 3.13 0 0 1-3-3.88Z' },
   ];
-  REGIONS = [
-    { code: 'near', label: 'Near me' },
-    { code: 'PG', label: 'Penang' },
-    { code: 'JB', label: 'Johor Bahru' },
+  RADII = [
+    { code: '500', label: 'Walk · 500 m', short: '500 m', m: 500 },
+    { code: '2000', label: 'Nearby · 2 km', short: '2 km', m: 2000 },
+    { code: '10000', label: 'Short drive · 10 km', short: '10 km', m: 10000 },
+    { code: 'all', label: 'Everywhere', short: 'everywhere', m: Infinity },
   ];
   LISTS = [
     { id: 'l1', name: 'Want to try', note: 'Private', spots: ['s4', 's6'] },
@@ -1253,53 +1298,92 @@ class Component extends DCLogic {
     layers: [{ id: 'osm', type: 'raster', source: 'osm' }],
   };
   syncMap() {
-    const visible = this.state.phase === 'app' && this.state.tab === 1 && this.state.nearbyMode === 'map' && !this.state.stack.length;
+    const S = this.state;
+    const visible = S.phase === 'app' && S.tab === 1 && S.nearbyMode === 'map' && !S.stack.length;
     const el = this.mapRef.current;
     if (!visible || !el) return;
     if (!window.maplibregl) { clearTimeout(this._mapWait); this._mapWait = setTimeout(() => this.syncMap(), 400); return; }
     const here = BS.geo.pos || BS.store.origin || { lat: 3.1319, lng: 101.6841 };
     if (!this._map) {
       this._map = new maplibregl.Map({ container: el, style: this.OSM_STYLE,
-        center: [here.lng, here.lat], zoom: 14, attributionControl: { compact: true } });
-      this._map.on('load', () => { this._mapReady = true; this.forceUpdate(); this.drawMarkers(true); });
+        center: [here.lng, here.lat], zoom: 15, attributionControl: { compact: true } });
+      this._map.on('load', () => {
+        this._mapReady = true;
+        this._map.addSource('me', { type: 'geojson', data: { type: 'FeatureCollection', features: [] } });
+        this._map.addLayer({ id: 'me-accuracy', type: 'circle', source: 'me',
+          paint: { 'circle-color': '#2E8FE0', 'circle-opacity': 0.12, 'circle-stroke-color': '#2E8FE0',
+            'circle-stroke-opacity': 0.35, 'circle-stroke-width': 1,
+            'circle-radius': ['interpolate', ['linear'], ['zoom'], 10, 3, 20, ['/', ['get', 'acc'], 0.6]] } });
+        this.forceUpdate();
+        this.drawMarkers(true);
+        this.drawMe();
+      });
+      this._map.on('dragstart', () => { if (this.state.mapFollow) this.setState({ mapFollow: false }); });
       this._markers = [];
     } else {
       this._map.resize();
       this.drawMarkers(false);
+      this.drawMe();
+    }
+  }
+  drawMe() {
+    const p = BS.geo.pos;
+    if (!this._map || !this._mapReady || !p) return;
+    if (!this._meMarker) {
+      const dot = document.createElement('div');
+      dot.style.cssText = 'width:20px;height:20px;border-radius:50%;background:#2E8FE0;border:3px solid #fff;box-shadow:0 2px 8px rgba(20,33,61,.4)';
+      this._meMarker = new maplibregl.Marker({ element: dot }).setLngLat([p.lng, p.lat]).addTo(this._map);
+    } else {
+      this._meMarker.setLngLat([p.lng, p.lat]);
+    }
+    const src = this._map.getSource('me');
+    if (src) src.setData({ type: 'FeatureCollection', features: [{ type: 'Feature',
+      geometry: { type: 'Point', coordinates: [p.lng, p.lat] },
+      properties: { acc: Math.max(15, BS.geo.accuracy || 25) } }] });
+    if (this.state.mapFollow) {
+      const c = this._map.getCenter();
+      if (Math.abs(c.lat - p.lat) > 0.0002 || Math.abs(c.lng - p.lng) > 0.0002) {
+        this._map.easeTo({ center: [p.lng, p.lat], duration: 700 });
+      }
     }
   }
   drawMarkers(fit) {
     if (!this._map || !this._mapReady) return;
-    const spots = this.inRegion(this.state.city);
-    const key = spots.map(s => s.id).join(',') + '|' + this.state.pin + '|' + (BS.geo.pos ? BS.geo.pos.lat.toFixed(4) : '');
+    const spots = this.inRadius();
+    const active = this.state.pin || (spots[0] && spots[0].id);
+    const key = spots.map(s => s.id).join(',') + '|' + active + '|' + spots.map(s => BS.visitsFor(s.id)).join('');
     if (key === this._markerKey && !fit) return;
     this._markerKey = key;
     (this._markers || []).forEach(m => m.remove());
     this._markers = [];
     const bounds = new maplibregl.LngLatBounds();
-    const active = this.state.pin || (spots[0] && spots[0].id);
     spots.forEach(s => {
-      const on = s.id === active;
+      const on = s.id === active, verified = BS.visitsFor(s.id) > 0;
       const el = document.createElement('button');
       el.type = 'button';
       el.style.cssText = 'display:flex;align-items:center;gap:5px;height:32px;padding:0 11px 0 8px;border:none;border-radius:99px;cursor:pointer;' +
         'font:700 12px/1 "Plus Jakarta Sans",system-ui,sans-serif;box-shadow:0 3px 10px rgba(20,33,61,.28);' +
-        (on ? 'background:#1B4BD2;color:#fff;' : 'background:#fff;color:#14213D;');
-      el.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="' + (on ? '#fff' : '#1B4BD2') +
-        '" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><span>' +
+        (on ? 'background:#1B4BD2;color:#fff;' : verified ? 'background:#fff;color:#14213D;' : 'background:#fff;color:#5A6B8C;');
+      const stroke = on ? '#fff' : verified ? '#1B4BD2' : '#93A3BF';
+      const icon = verified
+        ? '<path d="M20 6 9 17l-5-5"/>'
+        : '<circle cx="12" cy="12" r="9"/><path d="M12 16v-4"/><path d="M12 8h.01"/>';
+      el.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="' + stroke +
+        '" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">' + icon + '</svg><span>' +
         s.name.replace(/[<>&]/g, '') + '</span>';
-      el.addEventListener('click', ev => { ev.stopPropagation(); this.setState({ pin: s.id }); });
+      el.addEventListener('click', ev => {
+        ev.stopPropagation();
+        this.setState({ pin: s.id, mapFollow: false });
+        if (this._map) this._map.easeTo({ center: [s.lng, s.lat], duration: 400 });
+      });
       this._markers.push(new maplibregl.Marker({ element: el, anchor: 'bottom' }).setLngLat([s.lng, s.lat]).addTo(this._map));
       bounds.extend([s.lng, s.lat]);
     });
     const me = BS.geo.pos;
-    if (me) {
-      const dot = document.createElement('div');
-      dot.style.cssText = 'width:18px;height:18px;border-radius:50%;background:#2E8FE0;border:3px solid #fff;box-shadow:0 2px 8px rgba(20,33,61,.35)';
-      this._markers.push(new maplibregl.Marker({ element: dot }).setLngLat([me.lng, me.lat]).addTo(this._map));
-      bounds.extend([me.lng, me.lat]);
+    if (me) bounds.extend([me.lng, me.lat]);
+    if (fit && !bounds.isEmpty() && !this.state.mapFollow) {
+      this._map.fitBounds(bounds, { padding: { top: 110, bottom: 200, left: 50, right: 50 }, maxZoom: 16, duration: 0 });
     }
-    if (fit && !bounds.isEmpty()) this._map.fitBounds(bounds, { padding: { top: 70, bottom: 190, left: 50, right: 50 }, maxZoom: 16, duration: 0 });
   }
   componentWillUnmount() {
     if (this._un) this._un();
@@ -1315,22 +1399,16 @@ class Component extends DCLogic {
     this.setState(next);
   }
   flash(t) { this.setState({ toast: t }); clearTimeout(this._toast); this._toast = setTimeout(() => this.setState({ toast: '' }), 1900); }
-
   all() { return BS.store.spots; }
   find(id) { return this.all().find(s => s.id === id); }
   allLists() { return this.LISTS.concat(BS.store.lists); }
   listItems(l) { return (l.spots || []).concat(BS.store.listAdd[l.id] || []); }
   meta(s) { return s.cuisine + ' · RM' + s.priceNum + ' · ' + s.area; }
-  region(s) {
-    const d = BS.distanceTo(s);
-    if (d !== null && d < 30000) return 'near';
-    if (s.lat > 4.5) return 'PG';
-    if (s.lat < 2.2) return 'JB';
-    return 'near';
-  }
-  inRegion(code) {
-    return this.all().filter(s => this.region(s) === code)
-      .sort((a, b) => (BS.distanceTo(a) ?? 9e9) - (BS.distanceTo(b) ?? 9e9));
+  radiusM() { return (this.RADII.find(r => r.code === this.state.city) || this.RADII[1]).m; }
+  byDistance(list) { return list.slice().sort((a, b) => (BS.distanceTo(a) ?? 9e9) - (BS.distanceTo(b) ?? 9e9)); }
+  inRadius(m) {
+    const lim = m === undefined ? this.radiusM() : m;
+    return this.byDistance(this.all().filter(s => { const d = BS.distanceTo(s); return d === null || d <= lim; }));
   }
   card(s) {
     const d = BS.distanceTo(s), saved = BS.store.saved[s.id], photo = BS.photoFor(s.id);
@@ -1344,8 +1422,9 @@ class Component extends DCLogic {
       avBg: mine ? '#1B4BD2' : '#2E8FE0',
       quote: last ? (last.note || (last.verdict === 'Definitely' ? 'would go again.' : last.verdict === 'Maybe' ? 'worth a try.' : 'would not go again.')) : '',
       hasVisit: !!last, noVisit: !last,
+      photoEl: photo ? React.createElement('img', { src: photo, alt: '', style: { position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' } }) : null,
+      hasPhoto: !!photo, noPhoto: !photo,
       dist: BS.fmtDist(d), walk: BS.fmtWalk(d),
-      photoEl: photo ? React.createElement('img', { src: photo, alt: '', style: { position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' } }) : null, hasPhoto: !!photo, noPhoto: !photo,
       heartFill: saved ? '#F97A1F' : 'none', heartStroke: saved ? '#F97A1F' : '#5A6B8C',
       open: () => this.push('spot', s.id),
       save: e => { if (e && e.stopPropagation) e.stopPropagation(); this.toggleSave(s.id); } };
@@ -1370,11 +1449,10 @@ class Component extends DCLogic {
     while (days.has(cur.toDateString())) { n++; cur.setDate(cur.getDate() - 1); }
     return n;
   }
-
   renderVals() {
     const S = this.state, ST = BS.store, ios = S.platform === 'ios';
     const top = S.stack[S.stack.length - 1] || {};
-    const regionSpots = this.inRegion(S.city);
+    const regionSpots = this.inRadius();
     const chip = this.CHIPS[S.chip];
     const feed = regionSpots.filter(chip.test);
     const pinId = S.pin || (regionSpots[0] && regionSpots[0].id);
@@ -1451,12 +1529,14 @@ class Component extends DCLogic {
         following: Object.keys(ST.following).filter(k => ST.following[k]).length,
         nextLevel: 'Next: Trusted Scout', toNext: Math.max(0, 20 - myCi.length),
         progress: Math.min(100, Math.round(myCi.length / 20 * 100)) },
-      cityLabel: gpsOn ? 'Near you · ±' + BS.geo.accuracy + ' m' : (BS.geo.error === 'denied' ? 'Location off — tap to fix' : 'Finding you…'),
-      cityShort: (this.REGIONS.find(r => r.code === S.city) || {}).label,
+      cityLabel: gpsOn ? 'You · ±' + BS.geo.accuracy + ' m · ' + (this.RADII.find(r => r.code === S.city) || this.RADII[1]).short : (BS.geo.error === 'denied' ? 'Location off — tap to fix' : 'Finding you…'),
+      cityShort: (this.RADII.find(r => r.code === S.city) || this.RADII[1]).short,
       gpsAcc: BS.geo.accuracy || 0,
       verifiedCount: regionSpots.length,
       verifiedHeadline: (() => { const v = regionSpots.filter(s => BS.visitsFor(s.id) > 0).length;
-        return v > 0 ? v + ' verified · ' + regionSpots.length + ' listed in ' + ((this.REGIONS.find(r => r.code === S.city) || {}).label || '') : regionSpots.length + ' spots listed, none verified yet'; })(),
+        const where = 'within ' + (this.RADII.find(r => r.code === S.city) || this.RADII[1]).short;
+        if (!regionSpots.length) return 'No spots ' + where;
+        return v > 0 ? v + ' verified · ' + regionSpots.length + ' listed ' + where : regionSpots.length + ' spots ' + where + ', none verified yet'; })(),
       verifiedNote: regionSpots.some(s => BS.visitsFor(s.id) > 0)
         ? 'Counts come from real check-ins only. Nobody paid to be here.'
         : 'A spot becomes verified the moment someone checks in on location. Nobody can pay to be here.',
@@ -1474,10 +1554,10 @@ class Component extends DCLogic {
       closeSheets: () => this.setState({ cityPicker: false, newListOpen: false, addSpotsOpen: false, cfgOpen: false }),
       noop: e => { if (e && e.stopPropagation) e.stopPropagation(); },
       cityPickerOpen: S.cityPicker,
-      cityOptions: this.REGIONS.map(r => ({ label: r.label, count: this.inRegion(r.code).length, active: r.code === S.city,
+      cityOptions: this.RADII.map(r => ({ label: r.label, count: this.inRadius(r.m).length, active: r.code === S.city,
         bd: r.code === S.city ? '#1B4BD2' : '#E3EAF6', bg: r.code === S.city ? '#EDF3FE' : '#fff',
         icon: r.code === S.city ? '#1B4BD2' : '#93A3BF',
-        pick: () => this.setState({ city: r.code, cityPicker: false, pin: (this.inRegion(r.code)[0] || {}).id || null }) })),
+        pick: () => this.setState({ city: r.code, cityPicker: false, pin: (this.inRadius(r.m)[0] || {}).id || null }) })),
 
       mapBtnBg: S.nearbyMode === 'map' ? '#fff' : 'transparent', mapBtnFg: S.nearbyMode === 'map' ? '#1B4BD2' : '#5A6B8C',
       listBtnBg: S.nearbyMode === 'list' ? '#fff' : 'transparent', listBtnFg: S.nearbyMode === 'list' ? '#1B4BD2' : '#5A6B8C',
@@ -1487,18 +1567,38 @@ class Component extends DCLogic {
       recenterMap: () => {
         BS.requestGeo().then(() => {
           const p = BS.geo.pos || BS.store.origin;
-          if (this._map && p) this._map.easeTo({ center: [p.lng, p.lat], zoom: 15, duration: 500 });
-          this.drawMarkers(false);
+          if (this._map && p) this._map.easeTo({ center: [p.lng, p.lat], zoom: 16, duration: 500 });
+          this.setState({ mapFollow: true });
+          this.drawMe();
         });
       },
-      cityPills: this.REGIONS.map(r => ({ label: r.label, bg: r.code === S.city ? '#1B4BD2' : '#fff', fg: r.code === S.city ? '#fff' : '#5A6B8C',
-        bd: r.code === S.city ? '#1B4BD2' : '#DCE5F2', pick: () => this.setState({ city: r.code, pin: (this.inRegion(r.code)[0] || {}).id || null }) })),
-      pins: regionSpots.slice(0, 3).map((s, i) => ({ label: s.name.split(' ')[0], x: [118, 44, 196][i], y: [196, 356, 440][i],
-        bg: pinId === s.id ? '#1B4BD2' : '#fff', fg: pinId === s.id ? '#fff' : '#14213D', pick: () => this.setState({ pin: s.id }) })),
-      mapFly: id => { const s = this.find(id); if (this._map && s) this._map.easeTo({ center: [s.lng, s.lat], duration: 400 }); },
+      cityPills: this.RADII.map(r => ({ label: r.short === 'everywhere' ? 'All' : r.short, bg: r.code === S.city ? '#1B4BD2' : '#fff', fg: r.code === S.city ? '#fff' : '#5A6B8C',
+        bd: r.code === S.city ? '#1B4BD2' : '#DCE5F2', pick: () => this.setState({ city: r.code, pin: (this.inRadius(r.m)[0] || {}).id || null }) })),
       activePin: this.card(this.find(pinId) || regionSpots[0] || {}),
-      openActivePin: () => this.push('spot', pinId),
+      hasActivePin: !!(pinId && this.find(pinId)),
+      openActivePin: () => { if (pinId) this.push('spot', pinId); },
       citySpots: regionSpots.map(s => this.card(s)),
+      nearbyEmpty: regionSpots.length === 0,
+      widenRadius: () => this.setState({ city: 'all' }),
+
+      mapQuery: S.mapQuery, mapHasQuery: S.mapQuery.trim().length > 0,
+      mapQueryChange: e => this.setState({ mapQuery: e.target.value }),
+      clearMapQuery: () => this.setState({ mapQuery: '' }),
+      mapResults: (() => { const q = S.mapQuery.trim().toLowerCase();
+        if (!q) return [];
+        return this.byDistance(this.all().filter(s => (s.name + ' ' + s.cuisine + ' ' + s.area).toLowerCase().includes(q))).slice(0, 6)
+          .map(s => ({ name: s.name, meta: this.meta(s), dist: BS.fmtDist(BS.distanceTo(s)),
+            pick: () => { this.setState({ pin: s.id, mapQuery: '', mapFollow: false });
+              if (this._map) this._map.easeTo({ center: [s.lng, s.lat], zoom: 16, duration: 600 }); } })); })(),
+      mapNoResults: S.mapQuery.trim().length > 0 && this.all().filter(s => (s.name + ' ' + s.cuisine + ' ' + s.area).toLowerCase().includes(S.mapQuery.trim().toLowerCase())).length === 0,
+      followOn: S.mapFollow, followOff: !S.mapFollow,
+      followBg: S.mapFollow ? '#1B4BD2' : 'rgba(255,255,255,.95)',
+      followFg: S.mapFollow ? '#fff' : '#1B4BD2',
+      toggleFollow: () => {
+        const on = !S.mapFollow;
+        this.setState({ mapFollow: on });
+        if (on) BS.requestGeo().then(() => { const p = BS.geo.pos; if (this._map && p) this._map.easeTo({ center: [p.lng, p.lat], zoom: 16, duration: 500 }); });
+      },
 
       checkinRows: regionSpots.slice(0, 5).map(s => { const d = BS.distanceTo(s), near = d !== null && d <= BS.RADIUS;
         return { name: s.name, meta: this.meta(s), dist: BS.fmtDist(d),

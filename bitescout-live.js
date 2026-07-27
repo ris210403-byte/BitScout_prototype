@@ -4,6 +4,7 @@
    Exposes window.BS. No build step, no npm. */
 (function () {
   var KEY = 'bs.v1', CFG = 'bs.firebase', LISTENERS = [];
+  var STORE_VERSION = 2;
   var CHECKIN_RADIUS_M = 150;
 
   function nowISO() { return new Date().toISOString(); }
@@ -11,11 +12,31 @@
 
   // ── store ────────────────────────────────────────────────────────────
   function blank() {
-    return { spots: [], checkins: [], saved: {}, lists: [], listAdd: {}, following: {},
+    return { v: STORE_VERSION, spots: [], checkins: [], saved: {}, lists: [], listAdd: {}, following: {},
              msgs: {}, user: null, origin: null, seeded: false, settings: { loc: true, push: false, halal: false } };
   }
+  // v1 stores carried invented endorsers and fabricated visit counts — scrub them
+  function migrate(s) {
+    if ((s.v || 1) >= STORE_VERSION) return s;
+    (s.spots || []).forEach(function (sp) {
+      delete sp.who; delete sp.initials; delete sp.avBg; delete sp.quote;
+      sp.visits = 0; sp.again = null;
+      if (sp.addedBy === 'seed') sp.unverified = true;
+    });
+    s.msgs = {};
+    s.following = {};
+    s.v = STORE_VERSION;
+    return s;
+  }
   function read() {
-    try { var raw = localStorage.getItem(KEY); return raw ? Object.assign(blank(), JSON.parse(raw)) : blank(); }
+    try {
+      var raw = localStorage.getItem(KEY);
+      if (!raw) return blank();
+      var parsed = JSON.parse(raw);
+      var s = Object.assign(blank(), parsed);
+      s.v = parsed.v || 1;           // version must come from the STORED data, not the defaults
+      return migrate(s);
+    }
     catch (e) { return blank(); }
   }
   var store = read();
@@ -76,15 +97,15 @@
   // ── seed: place the starter spots around wherever the user actually is ──
   var FALLBACK = { lat: 3.1319, lng: 101.6841 }; // Bangsar, KL
   var SEED = [
-    { name: 'Warung Pak Din', cuisine: 'Nasi lemak', priceNum: 8, area: 'corner shoplot', visits: 42, again: 94, halal: 'Certified', hours: '7:00 – 14:30', open: true, slot: 'photo — nasi lemak plate', who: 'Aisyah', initials: 'AR', avBg: '#1B4BD2', quote: 'checked in twice this week — sambal is no joke.', tags: ['Cash only', 'Breakfast', 'Standing tables'], dx: 90, dy: 60 },
-    { name: 'Kopi & Kaya House', cuisine: 'Kopitiam', priceNum: 12, area: 'main road', visits: 27, again: 88, halal: 'Pork-free', hours: '7:30 – 18:00', open: true, slot: 'photo — kopitiam interior', who: 'Wei Jun', initials: 'WJ', avBg: '#2E8FE0', quote: 'quiet before 9am, best kaya toast around.', tags: ['Wifi', 'Aircon', 'Card ok'], dx: -220, dy: 180 },
-    { name: 'Roti Canai Corner', cuisine: 'Mamak', priceNum: 6, area: 'two streets over', visits: 68, again: 97, halal: 'Certified', hours: 'Open 24 hours', open: true, slot: 'photo — roti canai on griddle', who: 'Daniel', initials: 'DL', avBg: '#F97A1F', quote: 'worth the walk, tarik is properly pulled.', tags: ['Late night', 'Halal', 'Outdoor'], dx: 420, dy: -300 },
-    { name: 'Sate Kajang Corner', cuisine: 'Satay', priceNum: 18, area: 'night market row', visits: 51, again: 91, halal: 'Certified', hours: '17:00 – 23:00', open: false, slot: 'photo — satay over charcoal', who: 'Farid', initials: 'FZ', avBg: '#1B4BD2', quote: 'go at 6pm before the queue builds.', tags: ['Dinner', 'Halal', 'Family'], dx: -1400, dy: 900 },
-    { name: 'CKT Ah Leng', cuisine: 'Noodles', priceNum: 11, area: 'food court', visits: 34, again: 89, halal: 'Pork-free', hours: '8:00 – 13:00', open: true, slot: 'photo — wok-fried kuey teow', who: 'Mei Ling', initials: 'ML', avBg: '#F97A1F', quote: 'ask for extra wok hei, he gets it.', tags: ['Cash only', 'Breakfast', 'Queue'], dx: 780, dy: 1100 },
-    { name: 'Lorong Selamat CKT', cuisine: 'Noodles', priceNum: 15, area: 'Georgetown, Penang', visits: 121, again: 96, halal: 'Pork-free', hours: '11:00 – 18:00', open: true, slot: 'photo — char kuey teow closeup', who: 'Priya', initials: 'PK', avBg: '#2E8FE0', quote: 'prawns are huge, worth the 20 min wait.', tags: ['Cash only', 'Lunch', 'Queue'], lat: 5.4192, lng: 100.3306 },
-    { name: 'Nasi Kandar Beratur', cuisine: 'Nasi kandar', priceNum: 14, area: 'Georgetown, Penang', visits: 240, again: 93, halal: 'Certified', hours: '22:00 – 07:00', open: false, slot: 'photo — nasi kandar counter', who: 'Hakim', initials: 'HN', avBg: '#1B4BD2', quote: 'queue is the point. Ayam goreng, always.', tags: ['Late night', 'Halal', 'Queue'], lat: 5.4141, lng: 100.3288 },
-    { name: 'Kacang Pool Haji', cuisine: 'Breakfast', priceNum: 9, area: 'Larkin, JB', visits: 87, again: 92, halal: 'Certified', hours: '7:00 – 12:00', open: true, slot: 'photo — kacang pool with egg', who: 'Nurul', initials: 'NA', avBg: '#F97A1F', quote: 'the JB breakfast. Add the egg, no debate.', tags: ['Breakfast', 'Halal', 'Cash only'], lat: 1.4927, lng: 103.7414 },
-    { name: 'Restoran Ah Chuan', cuisine: 'Bak kut teh', priceNum: 20, area: 'Taman Sentosa, JB', visits: 63, again: 90, halal: 'Non-halal', hours: '8:00 – 15:00', open: true, slot: 'photo — claypot bak kut teh', who: 'Kevin', initials: 'KT', avBg: '#2E8FE0', quote: 'peppery broth, refills are free.', tags: ['Aircon', 'Lunch', 'Card ok'], lat: 1.4732, lng: 103.7618 }
+    { name: 'Warung Pak Din', cuisine: 'Nasi lemak', priceNum: 8, area: 'corner shoplot', halal: 'Certified', hours: '7:00 – 14:30', open: true, slot: 'photo — nasi lemak plate',  tags: ['Cash only', 'Breakfast', 'Standing tables'], dx: 90, dy: 60 },
+    { name: 'Kopi & Kaya House', cuisine: 'Kopitiam', priceNum: 12, area: 'main road', halal: 'Pork-free', hours: '7:30 – 18:00', open: true, slot: 'photo — kopitiam interior',  tags: ['Wifi', 'Aircon', 'Card ok'], dx: -220, dy: 180 },
+    { name: 'Roti Canai Corner', cuisine: 'Mamak', priceNum: 6, area: 'two streets over', halal: 'Certified', hours: 'Open 24 hours', open: true, slot: 'photo — roti canai on griddle',  tags: ['Late night', 'Halal', 'Outdoor'], dx: 420, dy: -300 },
+    { name: 'Sate Kajang Corner', cuisine: 'Satay', priceNum: 18, area: 'night market row', halal: 'Certified', hours: '17:00 – 23:00', open: false, slot: 'photo — satay over charcoal',  tags: ['Dinner', 'Halal', 'Family'], dx: -1400, dy: 900 },
+    { name: 'CKT Ah Leng', cuisine: 'Noodles', priceNum: 11, area: 'food court', halal: 'Pork-free', hours: '8:00 – 13:00', open: true, slot: 'photo — wok-fried kuey teow',  tags: ['Cash only', 'Breakfast', 'Queue'], dx: 780, dy: 1100 },
+    { name: 'Lorong Selamat CKT', cuisine: 'Noodles', priceNum: 15, area: 'Georgetown, Penang', halal: 'Pork-free', hours: '11:00 – 18:00', open: true, slot: 'photo — char kuey teow closeup',  tags: ['Cash only', 'Lunch', 'Queue'], lat: 5.4192, lng: 100.3306 },
+    { name: 'Nasi Kandar Beratur', cuisine: 'Nasi kandar', priceNum: 14, area: 'Georgetown, Penang', halal: 'Certified', hours: '22:00 – 07:00', open: false, slot: 'photo — nasi kandar counter',  tags: ['Late night', 'Halal', 'Queue'], lat: 5.4141, lng: 100.3288 },
+    { name: 'Kacang Pool Haji', cuisine: 'Breakfast', priceNum: 9, area: 'Larkin, JB', halal: 'Certified', hours: '7:00 – 12:00', open: true, slot: 'photo — kacang pool with egg',  tags: ['Breakfast', 'Halal', 'Cash only'], lat: 1.4927, lng: 103.7414 },
+    { name: 'Restoran Ah Chuan', cuisine: 'Bak kut teh', priceNum: 20, area: 'Taman Sentosa, JB', halal: 'Non-halal', hours: '8:00 – 15:00', open: true, slot: 'photo — claypot bak kut teh',  tags: ['Aircon', 'Lunch', 'Card ok'], lat: 1.4732, lng: 103.7618 }
   ];
   function offset(o, dx, dy) {
     return { lat: o.lat + dy / 111320, lng: o.lng + dx / (111320 * Math.cos(o.lat * Math.PI / 180)) };
@@ -95,6 +116,7 @@
       var pos = s.lat ? { lat: s.lat, lng: s.lng } : offset(origin, s.dx, s.dy);
       var o = {}; for (var k in s) if (k !== 'dx' && k !== 'dy') o[k] = s[k];
       o.id = 's' + (i + 1); o.lat = pos.lat; o.lng = pos.lng; o.addedBy = 'seed'; o.createdAt = nowISO();
+      o.unverified = true; o.visits = 0; o.again = null;
       return o;
     });
     store.seeded = true;
@@ -193,6 +215,7 @@
   }
   function cloudWrite(coll, obj) {
     if (!cloud.db) return Promise.resolve();
+    if (coll === 'spots') { obj = Object.assign({}, obj); delete obj.who; delete obj.initials; delete obj.avBg; delete obj.quote; }
     var F = cloud.fns.F;
     return F.setDoc(F.doc(cloud.db, coll, obj.id), obj, { merge: true }).catch(function (e) { cloud.error = e.message; });
   }
@@ -225,8 +248,13 @@
     fmtDist: fmtDist, fmtWalk: fmtWalk,
     canCheckIn: function (s) { var d = this.distanceTo(s); return d !== null && d <= CHECKIN_RADIUS_M; },
     visitsFor: function (id) {
-      var base = (store.spots.find(function (s) { return s.id === id; }) || {}).visits || 0;
-      return base + store.checkins.filter(function (c) { return c.spotId === id; }).length;
+      return store.checkins.filter(function (c) { return c.spotId === id; }).length;
+    },
+    againFor: function (id) {
+      var cs = store.checkins.filter(function (c) { return c.spotId === id; });
+      if (!cs.length) return null;
+      var yes = cs.filter(function (c) { return c.verdict === 'Definitely'; }).length;
+      return Math.round(yes / cs.length * 100);
     },
     myCheckins: function () {
       var me = (store.user && store.user.uid) || 'local';
@@ -246,7 +274,7 @@
                 userId: u.uid || 'local', userName: u.name || 'You', userInitials: u.initials || 'ME',
                 createdAt: nowISO(), geo: geo.pos || null };
       store.checkins.push(c); emit();
-      if (cloud.db) uploadPhoto(c.photo, 'checkins/' + c.id + '.jpg').then(function (url) {
+      if (cloud.db) uploadPhoto(c.photo, 'place-photos/' + spotId + '/' + c.id + '.jpg').then(function (url) {
         cloudWrite('checkins', Object.assign({}, c, { photo: url }));
       });
       return c;
@@ -254,14 +282,13 @@
     addSpot: function (data) {
       var pos = geo.pos || store.origin || FALLBACK;
       var s = Object.assign({
-        id: uid('sp'), lat: pos.lat, lng: pos.lng, visits: 0, again: 100, open: true,
+        id: uid('sp'), lat: pos.lat, lng: pos.lng, open: true,
         hours: 'Hours not added yet', area: 'added by you', tags: ['New', 'Needs 2 confirmations'],
-        who: 'You', initials: (store.user && store.user.initials) || 'ME', avBg: '#1B4BD2',
-        quote: 'added this spot and checked in first.', addedBy: (store.user && store.user.uid) || 'local',
+        addedBy: (store.user && store.user.uid) || 'local',
         createdAt: nowISO(), slot: 'photo — ' + (data.name || 'new spot').toLowerCase()
       }, data);
       store.spots.push(s); emit();
-      if (cloud.db) uploadPhoto(s.photo, 'spots/' + s.id + '.jpg').then(function (url) {
+      if (cloud.db) uploadPhoto(s.photo, 'place-photos/' + s.id + '/cover.jpg').then(function (url) {
         cloudWrite('spots', Object.assign({}, s, { photo: url }));
       });
       return s;
@@ -288,8 +315,10 @@
       store.msgs[threadId] = (store.msgs[threadId] || []).concat([msg]); emit();
     },
     signInLocal: function (name) {
-      var n = (name || 'You').trim();
-      store.user = { uid: 'local', name: n, email: 'this device only', initials: n.split(' ').map(function (w) { return w[0]; }).join('').slice(0, 2).toUpperCase(), local: true };
+      var n = (name || 'Me').trim();
+      var parts = n.split(/\s+/).filter(Boolean);
+      var ini = (parts.length > 1 ? parts[0][0] + parts[1][0] : n.slice(0, 2)).toUpperCase();
+      store.user = { uid: 'local', name: n, email: 'this device only', initials: ini, local: true };
       emit(); return Promise.resolve(store.user);
     },
     signInGoogle: function () {

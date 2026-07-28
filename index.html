@@ -147,16 +147,6 @@ input::placeholder,textarea::placeholder{color:#93A3BF}
         <button onClick="{{ obNext }}" style="width:100%; display:flex; align-items:center; justify-content:center; gap:9px; height:56px; border:none; border-radius:17px; background:#1B4BD2; color:#fff; font-family:inherit; font-size:16.5px; font-weight:700; cursor:pointer" style-active="transform:scale(.97)" style-hover="background:#1640B8"><span>Continue anyway</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg></button>
       </sc-if>
     </div>
-    <sc-if value="{{ dlg }}" hint-placeholder-val="{{ false }}">
-      <div style="position:absolute; inset:0; z-index:40; background:rgba(10,18,38,.42); backdrop-filter:blur(3px); display:flex; align-items:center; justify-content:center">
-        <div style="width:272px; border-radius:15px; overflow:hidden; background:rgba(250,250,250,.97); font-family:-apple-system,system-ui,sans-serif; text-align:center; box-shadow:0 20px 50px rgba(0,0,0,.3)">
-          <div style="padding:19px 18px 15px"><div style="font-size:17px; font-weight:600; color:#000; line-height:1.3">Allow &ldquo;biteScout&rdquo; to use your location?</div><div style="margin-top:6px; font-size:13px; line-height:1.4; color:#3C3C43">Your location is used to show verified spots nearby.</div></div>
-          <button onClick="{{ allowLoc }}" style="width:100%; height:44px; border:none; border-top:.5px solid rgba(60,60,67,.29); background:none; font-family:inherit; font-size:17px; font-weight:600; color:#007AFF; cursor:pointer" style-active="background:rgba(0,0,0,.05)">Allow While Using App</button>
-          <button onClick="{{ allowLoc }}" style="width:100%; height:44px; border:none; border-top:.5px solid rgba(60,60,67,.29); background:none; font-family:inherit; font-size:17px; font-weight:400; color:#007AFF; cursor:pointer" style-active="background:rgba(0,0,0,.05)">Allow Once</button>
-          <button onClick="{{ denyLoc }}" style="width:100%; height:44px; border:none; border-top:.5px solid rgba(60,60,67,.29); background:none; font-family:inherit; font-size:17px; font-weight:400; color:#007AFF; cursor:pointer" style-active="background:rgba(0,0,0,.05)">Don&rsquo;t Allow</button>
-        </div>
-      </div>
-    </sc-if>
   </div>
 
   <div data-screen-label="4 · Sign in" style="width:25%; flex:0 0 25%; height:100%; box-sizing:border-box; background:#fff; display:flex; flex-direction:column">
@@ -219,7 +209,7 @@ input::placeholder,textarea::placeholder{color:#93A3BF}
       <sc-if value="{{ android }}" hint-placeholder-val="{{ false }}"><div style="height:2px"></div></sc-if>
       <div style="display:flex; align-items:center; justify-content:space-between; gap:12px">
         <div>
-          <button onClick="{{ openCityPicker }}" style="display:flex; align-items:center; gap:5px; padding:0; border:none; background:none; cursor:pointer; color:#5A6B8C; font-family:inherit">
+          <button onClick="{{ locHeaderTap }}" style="display:flex; align-items:center; gap:5px; min-height:32px; margin:-8px -8px 0; padding:8px; border:none; border-radius:10px; background:none; cursor:pointer; color:#5A6B8C; font-family:inherit" style-hover="background:#F1F5FC">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#F97A1F" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"></path><circle cx="12" cy="10" r="3"></circle></svg>
             <span style="font-size:12px; font-weight:600; letter-spacing:.2px">{{ cityLabel }}</span>
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"></path></svg>
@@ -227,11 +217,11 @@ input::placeholder,textarea::placeholder{color:#93A3BF}
           <div style="margin-top:4px; font-size:21px; font-weight:800; color:#14213D; letter-spacing:-.4px">Hey {{ user.first }}</div>
         </div>
         <div style="flex:none; display:flex; align-items:center; gap:8px">
-          <button onClick="{{ openNotifs }}" style="position:relative; width:44px; height:44px; border:1.5px solid #DCE5F2; border-radius:50%; background:#fff; display:flex; align-items:center; justify-content:center; cursor:pointer; color:#5A6B8C" style-hover="background:#F6F9FE">
+          <button aria-label="Activity" onClick="{{ openNotifs }}" style="position:relative; width:44px; height:44px; border:1.5px solid #DCE5F2; border-radius:50%; background:#fff; display:flex; align-items:center; justify-content:center; cursor:pointer; color:#5A6B8C" style-hover="background:#F6F9FE">
             <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.268 21a2 2 0 0 0 3.464 0"></path><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"></path></svg>
             <sc-if value="{{ hasUnread }}" hint-placeholder-val="{{ true }}"><div style="position:absolute; top:8px; right:9px; width:9px; height:9px; border-radius:50%; background:#F97A1F; border:2px solid #fff"></div></sc-if>
           </button>
-          <button onClick="{{ openMeTab }}" style="width:44px; height:44px; border:none; border-radius:50%; background:#1B4BD2; display:flex; align-items:center; justify-content:center; cursor:pointer; font-family:inherit; font-size:13.5px; font-weight:800; color:#fff">{{ user.initials }}</button>
+          <button aria-label="Your profile" onClick="{{ openMeTab }}" style="width:44px; height:44px; border:none; border-radius:50%; background:#1B4BD2; display:flex; align-items:center; justify-content:center; cursor:pointer; font-family:inherit; font-size:13.5px; font-weight:800; color:#fff">{{ user.initials }}</button>
         </div>
       </div>
       <button onClick="{{ openSearch }}" style="margin-top:13px; width:100%; display:flex; align-items:center; gap:9px; height:46px; padding:0 15px; border-radius:14px; background:#F1F5FC; border:1px solid #E3EAF6; cursor:pointer; font-family:inherit; text-align:left" style-hover="background:#E9F0FB">
@@ -245,13 +235,19 @@ input::placeholder,textarea::placeholder{color:#93A3BF}
       </div>
     </div>
     <div data-bs-scroll style="flex:1; overflow-y:auto; padding:16px 22px 20px">
+      <sc-if value="{{ approx }}" hint-placeholder-val="{{ true }}">
+        <button aria-label="Retry locating me" onClick="{{ retryGeo }}" style="display:flex; align-items:flex-start; gap:10px; width:100%; box-sizing:border-box; margin-bottom:12px; padding:13px 15px; border-radius:16px; background:#FEF6EE; border:1px solid #FADCC4; cursor:pointer; font-family:inherit; text-align:left">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#C25E10" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="flex:none; margin-top:1px"><polygon points="3 11 22 2 13 21 11 13 3 11"></polygon></svg>
+          <div style="font-size:12.5px; line-height:1.45; color:#9A4C0C"><span style="font-weight:700">We can't see where you are</span> — distances below are rough estimates until location works. Tap to try again.</div>
+        </button>
+      </sc-if>
       <div style="display:flex; align-items:flex-start; gap:11px; padding:14px 15px; border-radius:16px; background:#EDF3FE; border:1px solid #D7E5FA">
         <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#1B4BD2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex:none; margin-top:1px"><path d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z"></path><path d="m9 12 2 2 4-4"></path></svg>
         <div><div style="font-size:13.5px; font-weight:700; color:#14213D">{{ verifiedHeadline }}</div><div style="margin-top:3px; font-size:12.5px; line-height:1.45; color:#4C689E">{{ verifiedNote }}</div></div>
       </div>
       <div style="margin-top:20px; display:flex; align-items:baseline; justify-content:space-between">
         <div style="font-size:17px; font-weight:800; color:#14213D; letter-spacing:-.3px">{{ feedTitle }}</div>
-        <button onClick="{{ openNearbyTab }}" style="border:none; background:none; padding:0; cursor:pointer; font-family:inherit; font-size:12.5px; font-weight:700; color:#1B4BD2">See all</button>
+        <button onClick="{{ openNearbyTab }}" style="border:none; background:none; min-height:40px; margin:-10px -10px -10px 0; padding:10px; border-radius:10px; cursor:pointer; font-family:inherit; font-size:12.5px; font-weight:700; color:#1B4BD2" style-hover="background:#EDF3FE">See all</button>
       </div>
       <sc-if value="{{ feedEmpty }}" hint-placeholder-val="{{ false }}">
         <div style="margin-top:14px; padding:28px 22px; border-radius:18px; background:#fff; border:1px dashed #DCE5F2; text-align:center">
@@ -350,9 +346,15 @@ input::placeholder,textarea::placeholder{color:#93A3BF}
             <span style="font-size:12.5px; font-weight:600; color:#5A6B8C">Loading map…</span>
           </div>
         </sc-if>
-        <button onClick="{{ toggleFollow }}" style="position:absolute; top:14px; right:14px; z-index:6; width:42px; height:42px; border:none; border-radius:13px; background:{{ followBg }}; color:{{ followFg }}; display:flex; align-items:center; justify-content:center; cursor:pointer; box-shadow:0 3px 10px rgba(20,33,61,.16)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M12 2v3"></path><path d="M12 19v3"></path><path d="M2 12h3"></path><path d="M19 12h3"></path></svg></button>
+        <button aria-label="Follow my location" onClick="{{ toggleFollow }}" style="position:absolute; top:14px; right:14px; z-index:6; width:42px; height:42px; border:none; border-radius:13px; background:{{ followBg }}; color:{{ followFg }}; display:flex; align-items:center; justify-content:center; cursor:pointer; box-shadow:0 3px 10px rgba(20,33,61,.16)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M12 2v3"></path><path d="M12 19v3"></path><path d="M2 12h3"></path><path d="M19 12h3"></path></svg></button>
+        <sc-if value="{{ approx }}" hint-placeholder-val="{{ true }}">
+          <button aria-label="Retry locating me" onClick="{{ retryGeo }}" style="position:absolute; left:14px; right:66px; top:14px; z-index:6; display:flex; align-items:center; gap:9px; padding:11px 13px; border:none; border-radius:13px; background:rgba(20,33,61,.9); cursor:pointer; font-family:inherit; text-align:left; box-shadow:0 4px 14px rgba(20,33,61,.28)">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#F9A76A" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><polygon points="3 11 22 2 13 21 11 13 3 11"></polygon></svg>
+            <span style="font-size:12px; font-weight:600; line-height:1.35; color:#fff">Your position is unknown — this isn't where you are. Tap to locate me.</span>
+          </button>
+        </sc-if>
         <sc-if value="{{ followOff }}" hint-placeholder-val="{{ false }}">
-          <button onClick="{{ recenterMap }}" style="position:absolute; top:66px; right:14px; z-index:6; display:flex; align-items:center; gap:6px; height:36px; padding:0 12px; border:none; border-radius:12px; background:rgba(20,33,61,.86); color:#fff; font-family:inherit; font-size:12px; font-weight:700; cursor:pointer; box-shadow:0 3px 10px rgba(20,33,61,.2)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 11 22 2 13 21 11 13 3 11"></polygon></svg><span>Follow me</span></button>
+          <button onClick="{{ recenterMap }}" style="position:absolute; top:110px; right:14px; z-index:6; display:flex; align-items:center; gap:6px; height:36px; padding:0 12px; border:none; border-radius:12px; background:rgba(20,33,61,.86); color:#fff; font-family:inherit; font-size:12px; font-weight:700; cursor:pointer; box-shadow:0 3px 10px rgba(20,33,61,.2)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 11 22 2 13 21 11 13 3 11"></polygon></svg><span>Follow me</span></button>
         </sc-if>
         <sc-if value="{{ mapHasQuery }}" hint-placeholder-val="{{ false }}">
           <div style="position:absolute; top:14px; left:14px; right:66px; z-index:7; border-radius:16px; overflow:hidden; background:#fff; box-shadow:0 8px 24px rgba(20,33,61,.2)">
@@ -397,7 +399,13 @@ input::placeholder,textarea::placeholder{color:#93A3BF}
     </sc-if>
     <sc-if value="{{ nearbyList }}" hint-placeholder-val="{{ false }}">
       <div data-bs-scroll style="flex:1; overflow-y:auto; padding:14px 22px 20px">
-        <div style="font-size:12.5px; font-weight:700; color:#93A3BF; letter-spacing:.3px; text-transform:uppercase">Sorted by distance · within {{ cityShort }}</div>
+        <sc-if value="{{ approx }}" hint-placeholder-val="{{ true }}">
+          <button aria-label="Retry locating me" onClick="{{ retryGeo }}" style="display:flex; align-items:center; gap:9px; width:100%; margin-bottom:12px; padding:12px 14px; border-radius:14px; background:#FEF6EE; border:1px solid #FADCC4; cursor:pointer; font-family:inherit; text-align:left">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#C25E10" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><polygon points="3 11 22 2 13 21 11 13 3 11"></polygon></svg>
+            <span style="font-size:12.5px; font-weight:600; color:#9A4C0C">Location unknown — distances are estimates. Tap to retry.</span>
+          </button>
+        </sc-if>
+        <div style="font-size:12.5px; font-weight:700; color:#93A3BF; letter-spacing:.3px; text-transform:uppercase">{{ sortLabel }}</div>
         <sc-if value="{{ nearbyEmpty }}" hint-placeholder-val="{{ false }}">
           <div style="margin-top:14px; padding:28px 22px; border-radius:18px; background:#fff; border:1px dashed #DCE5F2; text-align:center">
             <div style="font-size:14.5px; font-weight:700; color:#14213D">Nothing within {{ cityShort }}</div>
@@ -519,7 +527,7 @@ input::placeholder,textarea::placeholder{color:#93A3BF}
             <div style="width:100%; height:76px; background:repeating-linear-gradient(135deg,#E7EDF7 0 8px,#DFE7F4 8px 16px)"></div>
             <div style="padding:11px 13px 13px">
               <div style="font-size:14px; font-weight:700; color:#14213D">{{ l.name }}</div>
-              <div style="margin-top:3px; font-size:12px; color:#93A3BF">{{ l.count }} spots</div>
+              <div style="margin-top:3px; font-size:12px; color:#93A3BF">{{ l.count }}</div>
             </div>
           </button>
         </sc-for>
@@ -589,7 +597,7 @@ input::placeholder,textarea::placeholder{color:#93A3BF}
         <sc-if value="{{ ios }}" hint-placeholder-val="{{ true }}"><div style="height:52px"></div></sc-if>
         <sc-if value="{{ android }}" hint-placeholder-val="{{ false }}"><div style="height:10px"></div></sc-if>
         <div style="display:flex; align-items:center; justify-content:flex-end">
-          <button onClick="{{ openSettings }}" style="width:44px; height:44px; border:none; border-radius:50%; background:none; display:flex; align-items:center; justify-content:center; cursor:pointer; color:#5A6B8C" style-hover="background:#F1F5FC"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path><circle cx="12" cy="12" r="3"></circle></svg></button>
+          <button aria-label="Settings" onClick="{{ openSettings }}" style="width:44px; height:44px; border:none; border-radius:50%; background:none; display:flex; align-items:center; justify-content:center; cursor:pointer; color:#5A6B8C" style-hover="background:#F1F5FC"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path><circle cx="12" cy="12" r="3"></circle></svg></button>
         </div>
         <div style="display:flex; align-items:center; gap:15px">
           <div style="flex:none; width:66px; height:66px; border-radius:50%; background:#1B4BD2; display:flex; align-items:center; justify-content:center; font-size:22px; font-weight:800; color:#fff">{{ user.initials }}</div>
@@ -655,7 +663,7 @@ input::placeholder,textarea::placeholder{color:#93A3BF}
     <sc-if value="{{ ios }}" hint-placeholder-val="{{ true }}"><div style="height:46px"></div></sc-if>
     <sc-if value="{{ android }}" hint-placeholder-val="{{ false }}"><div style="height:4px"></div></sc-if>
     <div style="display:flex; align-items:center; gap:8px">
-      <button onClick="{{ pop }}" style="flex:none; width:40px; height:44px; border:none; background:none; display:flex; align-items:center; justify-content:center; cursor:pointer; color:#5A6B8C"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"></path></svg></button>
+      <button aria-label="Back" onClick="{{ pop }}" style="flex:none; width:40px; height:44px; border:none; background:none; display:flex; align-items:center; justify-content:center; cursor:pointer; color:#5A6B8C"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"></path></svg></button>
       <div style="flex:1; display:flex; align-items:center; gap:9px; height:46px; padding:0 14px; border-radius:14px; background:#F1F5FC; border:1px solid #E3EAF6">
         <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#93A3BF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
         <input placeholder="Search spots, food, areas" value="{{ query }}" onChange="{{ queryChange }}" style="flex:1; min-width:0; border:none; background:none; outline:none; font-family:inherit; font-size:14.5px; color:#14213D">
@@ -666,7 +674,12 @@ input::placeholder,textarea::placeholder{color:#93A3BF}
   <div data-bs-scroll style="flex:1; overflow-y:auto; padding:16px 22px 20px">
     <sc-if value="{{ noQuery }}" hint-placeholder-val="{{ true }}">
       <div>
-        <div style="font-size:12.5px; font-weight:700; color:#93A3BF; letter-spacing:.3px; text-transform:uppercase">Recent</div>
+        <sc-if value="{{ hasRecent }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex; align-items:center; justify-content:space-between">
+            <div style="font-size:12.5px; font-weight:700; color:#93A3BF; letter-spacing:.3px; text-transform:uppercase">Recent</div>
+            <button onClick="{{ clearRecent }}" style="min-height:36px; margin:-8px -8px -8px 0; padding:8px; border:none; border-radius:10px; background:none; font-family:inherit; font-size:12px; font-weight:700; color:#1B4BD2; cursor:pointer">Clear</button>
+          </div>
+        </sc-if>
         <div style="margin-top:11px; display:flex; flex-wrap:wrap; gap:8px">
           <sc-for list="{{ recent }}" as="r" hint-placeholder-count="4">
             <button onClick="{{ r.pick }}" style="display:flex; align-items:center; gap:7px; height:36px; padding:0 13px; border:1px solid #E3EAF6; border-radius:99px; background:#fff; cursor:pointer; font-family:inherit; font-size:13px; font-weight:600; color:#5A6B8C" style-hover="border-color:#C9D6EE"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#93A3BF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M12 6v6l4 2"></path></svg><span>{{ r.label }}</span></button>
@@ -751,8 +764,8 @@ input::placeholder,textarea::placeholder{color:#93A3BF}
     <div style="position:relative; height:255px; background:repeating-linear-gradient(135deg,#E7EDF7 0 10px,#DFE7F4 10px 20px); display:flex; align-items:center; justify-content:center">
       <sc-if value="{{ spot.noPhoto }}" hint-placeholder-val="{{ true }}"><span style="font-family:ui-monospace,Menlo,monospace; font-size:10.5px; letter-spacing:.4px; color:#8798B8; text-transform:uppercase">{{ spot.slot }}</span></sc-if>
       {{ spot.photoEl }}
-      <button onClick="{{ pop }}" style="position:absolute; top:{{ overlayTop }}px; left:16px; width:40px; height:40px; border:none; border-radius:50%; background:rgba(255,255,255,.94); display:flex; align-items:center; justify-content:center; cursor:pointer; color:#14213D; box-shadow:0 2px 8px rgba(20,33,61,.16)"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"></path></svg></button>
-      <button onClick="{{ shareSpot }}" style="position:absolute; top:{{ overlayTop }}px; right:16px; width:40px; height:40px; border:none; border-radius:50%; background:rgba(255,255,255,.94); display:flex; align-items:center; justify-content:center; cursor:pointer; color:#14213D; box-shadow:0 2px 8px rgba(20,33,61,.16)"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path><polyline points="16 6 12 2 8 6"></polyline><line x1="12" x2="12" y1="2" y2="15"></line></svg></button>
+      <button aria-label="Back" onClick="{{ pop }}" style="position:absolute; top:{{ overlayTop }}px; left:16px; width:40px; height:40px; border:none; border-radius:50%; background:rgba(255,255,255,.94); display:flex; align-items:center; justify-content:center; cursor:pointer; color:#14213D; box-shadow:0 2px 8px rgba(20,33,61,.16)"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"></path></svg></button>
+      <button aria-label="Share this spot" onClick="{{ shareSpot }}" style="position:absolute; top:{{ overlayTop }}px; right:16px; width:40px; height:40px; border:none; border-radius:50%; background:rgba(255,255,255,.94); display:flex; align-items:center; justify-content:center; cursor:pointer; color:#14213D; box-shadow:0 2px 8px rgba(20,33,61,.16)"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path><polyline points="16 6 12 2 8 6"></polyline><line x1="12" x2="12" y1="2" y2="15"></line></svg></button>
       <div style="position:absolute; left:16px; bottom:16px; display:flex; align-items:center; gap:6px; padding:6px 12px; border-radius:99px; background:rgba(20,33,61,.85)">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#8FC8F8" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg>
         <span style="font-size:11.5px; font-weight:700; color:#fff">Verified spot</span>
@@ -771,6 +784,19 @@ input::placeholder,textarea::placeholder{color:#93A3BF}
           <span style="padding:6px 11px; border-radius:99px; background:#F1F5FC; font-size:12px; font-weight:600; color:#5A6B8C">{{ t.label }}</span>
         </sc-for>
       </div>
+      <button onClick="{{ directions }}" style="margin-top:16px; width:100%; display:flex; align-items:center; gap:11px; padding:14px 16px; border:1.5px solid #DCE5F2; border-radius:16px; background:#fff; cursor:pointer; font-family:inherit; text-align:left" style-hover="background:#F6F9FE">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#1B4BD2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><polygon points="3 11 22 2 13 21 11 13 3 11"></polygon></svg>
+        <div style="flex:1"><div style="font-size:14px; font-weight:700; color:#14213D">Get directions</div><div style="margin-top:2px; font-size:12px; color:#93A3BF">{{ spot.dist }} · {{ spot.walk }}</div></div>
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#C2CCDC" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="m9 18 6-6-6-6"></path></svg>
+      </button>
+      <sc-if value="{{ hasGallery }}" hint-placeholder-val="{{ false }}">
+        <div style="margin-top:20px">
+          <div style="font-size:12.5px; font-weight:700; color:#93A3BF; letter-spacing:.3px; text-transform:uppercase">{{ galleryCount }}</div>
+          <div data-bs-scroll style="margin-top:11px; display:flex; gap:9px; overflow-x:auto; overflow-y:hidden">
+            <sc-for list="{{ photoStrip }}" as="p" hint-placeholder-count="0">{{ p.el }}</sc-for>
+          </div>
+        </div>
+      </sc-if>
       <div style="margin-top:18px; padding:16px; border-radius:18px; background:#EDF3FE; border:1px solid #D7E5FA">
         <div style="display:flex; align-items:center; gap:9px">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1B4BD2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z"></path><path d="m9 12 2 2 4-4"></path></svg>
@@ -820,7 +846,7 @@ input::placeholder,textarea::placeholder{color:#93A3BF}
     </div>
   </div>
   <div style="flex:none; display:flex; gap:10px; padding:14px 20px 26px; background:#fff; border-top:1px solid #E9F0FB">
-    <button onClick="{{ saveActive }}" style="flex:none; width:56px; height:54px; border:1.5px solid #DCE5F2; border-radius:16px; background:#fff; display:flex; align-items:center; justify-content:center; cursor:pointer" style-hover="background:#F6F9FE"><svg width="21" height="21" viewBox="0 0 24 24" fill="{{ spot.heartFill }}" stroke="{{ spot.heartStroke }}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"></path></svg></button>
+    <button aria-label="Save this spot" onClick="{{ saveActive }}" style="flex:none; width:56px; height:54px; border:1.5px solid #DCE5F2; border-radius:16px; background:#fff; display:flex; align-items:center; justify-content:center; cursor:pointer" style-hover="background:#F6F9FE"><svg width="21" height="21" viewBox="0 0 24 24" fill="{{ spot.heartFill }}" stroke="{{ spot.heartStroke }}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"></path></svg></button>
     <button onClick="{{ startCheckIn }}" style="flex:1; display:flex; align-items:center; justify-content:center; gap:9px; height:54px; border:none; border-radius:16px; background:#1B4BD2; color:#fff; font-family:inherit; font-size:16px; font-weight:700; cursor:pointer" style-hover="background:#1640B8" style-active="transform:scale(.98)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"></path><circle cx="12" cy="10" r="3"></circle></svg><span>I'm here — check in</span></button>
   </div>
 </div>
@@ -833,7 +859,7 @@ input::placeholder,textarea::placeholder{color:#93A3BF}
     <sc-if value="{{ ios }}" hint-placeholder-val="{{ true }}"><div style="height:46px"></div></sc-if>
     <sc-if value="{{ android }}" hint-placeholder-val="{{ false }}"><div style="height:4px"></div></sc-if>
     <div style="display:flex; align-items:center; justify-content:space-between">
-      <button onClick="{{ pop }}" style="width:44px; height:44px; border:none; border-radius:50%; background:none; display:flex; align-items:center; justify-content:center; cursor:pointer; color:#5A6B8C" style-hover="background:#F1F5FC"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"></path></svg></button>
+      <button aria-label="Back" onClick="{{ pop }}" style="width:44px; height:44px; border:none; border-radius:50%; background:none; display:flex; align-items:center; justify-content:center; cursor:pointer; color:#5A6B8C" style-hover="background:#F1F5FC"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"></path></svg></button>
       <span style="font-size:16px; font-weight:800; color:#14213D">Activity</span>
       <button onClick="{{ markRead }}" style="height:44px; padding:0 10px; border:none; background:none; font-family:inherit; font-size:13px; font-weight:700; color:#1B4BD2; cursor:pointer">Mark read</button>
     </div>
@@ -868,10 +894,10 @@ input::placeholder,textarea::placeholder{color:#93A3BF}
   <div style="flex:none; padding:8px 14px 14px; background:#fff; border-bottom:1px solid #E9F0FB">
     <sc-if value="{{ ios }}" hint-placeholder-val="{{ true }}"><div style="height:46px"></div></sc-if>
     <sc-if value="{{ android }}" hint-placeholder-val="{{ false }}"><div style="height:4px"></div></sc-if>
-    <button onClick="{{ pop }}" style="width:44px; height:44px; border:none; border-radius:50%; background:none; display:flex; align-items:center; justify-content:center; cursor:pointer; color:#5A6B8C" style-hover="background:#F1F5FC"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"></path></svg></button>
+    <button aria-label="Back" onClick="{{ pop }}" style="width:44px; height:44px; border:none; border-radius:50%; background:none; display:flex; align-items:center; justify-content:center; cursor:pointer; color:#5A6B8C" style-hover="background:#F1F5FC"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"></path></svg></button>
     <div style="margin-top:6px; padding:0 8px">
       <div style="font-size:22px; font-weight:800; color:#14213D; letter-spacing:-.4px">{{ list.name }}</div>
-      <div style="margin-top:4px; font-size:13px; color:#5A6B8C">{{ list.count }} spots · {{ list.note }}</div>
+      <div style="margin-top:4px; font-size:13px; color:#5A6B8C">{{ list.count }} · {{ list.note }}</div>
       <button onClick="{{ openAddSpots }}" style="margin-top:12px; display:flex; align-items:center; gap:7px; height:40px; padding:0 14px; border:1.5px solid #DCE5F2; border-radius:13px; background:#fff; cursor:pointer; font-family:inherit; font-size:13px; font-weight:700; color:#1B4BD2" style-hover="background:#F6F9FE"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#1B4BD2" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14"></path><path d="M5 12h14"></path></svg><span>Add spots</span></button>
     </div>
   </div>
@@ -931,7 +957,7 @@ input::placeholder,textarea::placeholder{color:#93A3BF}
     <sc-if value="{{ ios }}" hint-placeholder-val="{{ true }}"><div style="height:46px"></div></sc-if>
     <sc-if value="{{ android }}" hint-placeholder-val="{{ false }}"><div style="height:4px"></div></sc-if>
     <div style="display:flex; align-items:center; justify-content:space-between">
-      <button onClick="{{ pop }}" style="width:44px; height:44px; border:none; border-radius:50%; background:none; display:flex; align-items:center; justify-content:center; cursor:pointer; color:#5A6B8C" style-hover="background:#F1F5FC"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"></path></svg></button>
+      <button aria-label="Back" onClick="{{ pop }}" style="width:44px; height:44px; border:none; border-radius:50%; background:none; display:flex; align-items:center; justify-content:center; cursor:pointer; color:#5A6B8C" style-hover="background:#F1F5FC"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"></path></svg></button>
       <span style="font-size:16px; font-weight:800; color:#14213D">Settings</span>
       <div style="width:44px"></div>
     </div>
@@ -977,7 +1003,7 @@ input::placeholder,textarea::placeholder{color:#93A3BF}
         <span style="flex:1; font-size:14px; font-weight:600; color:#E5484D">Sign out</span>
       </button>
     </div>
-    <div style="margin-top:18px; text-align:center; font-size:11.5px; line-height:1.5; color:#93A3BF">biteScout · v0.4 prototype<br>No ads, no paid placements, ever.</div>
+    <div style="margin-top:18px; text-align:center; font-size:11.5px; line-height:1.5; color:#93A3BF">biteScout · v1.0 build<br>No ads, no paid placements, ever.</div>
   </div>
 </div>
 </sc-if>
@@ -989,7 +1015,7 @@ input::placeholder,textarea::placeholder{color:#93A3BF}
   <sc-if value="{{ android }}" hint-placeholder-val="{{ false }}"><div style="flex:none; height:12px"></div></sc-if>
   <sc-if value="{{ ciForm }}" hint-placeholder-val="{{ true }}">
     <div style="flex:none; display:flex; align-items:center; justify-content:space-between; padding:0 14px 0 8px">
-      <button onClick="{{ closeCi }}" style="width:44px; height:44px; border:none; border-radius:50%; background:none; display:flex; align-items:center; justify-content:center; cursor:pointer; color:#5A6B8C" style-hover="background:#F1F5FC"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg></button>
+      <button aria-label="Close" onClick="{{ closeCi }}" style="width:44px; height:44px; border:none; border-radius:50%; background:none; display:flex; align-items:center; justify-content:center; cursor:pointer; color:#5A6B8C" style-hover="background:#F1F5FC"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg></button>
       <span style="font-size:15.5px; font-weight:700; color:#14213D">Check in</span>
       <div style="width:44px"></div>
     </div>
@@ -999,6 +1025,18 @@ input::placeholder,textarea::placeholder{color:#93A3BF}
           <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#3D8B3D" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M20 6 9 17l-5-5"></path></svg>
           <div style="font-size:12.5px; line-height:1.45; color:#2F6B2F"><span style="font-weight:700">GPS confirmed</span> — you're at {{ ciSpotName }} ({{ ciDistLabel }} away).</div>
         </div>
+      </sc-if>
+      <sc-if value="{{ ciRepeat }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex; align-items:flex-start; gap:10px; padding:13px 15px; margin-bottom:10px; border-radius:15px; background:#EDF3FE; border:1px solid #D7E5FA">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#1B4BD2" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="flex:none; margin-top:1px"><path d="M20 6 9 17l-5-5"></path></svg>
+          <div style="font-size:12.5px; line-height:1.45; color:#28518F"><span style="font-weight:700">You've already checked in here</span> — one check-in per visit keeps the counts honest. Come back later.</div>
+        </div>
+      </sc-if>
+      <sc-if value="{{ ciNoFix }}" hint-placeholder-val="{{ false }}">
+        <button aria-label="Retry locating me" onClick="{{ retryGeo }}" style="display:flex; align-items:flex-start; gap:10px; width:100%; box-sizing:border-box; padding:13px 15px; border-radius:15px; background:#FEF6EE; border:1px solid #FADCC4; cursor:pointer; font-family:inherit; text-align:left">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#C25E10" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="flex:none; margin-top:1px"><polygon points="3 11 22 2 13 21 11 13 3 11"></polygon></svg>
+          <div style="font-size:12.5px; line-height:1.45; color:#9A4C0C"><span style="font-weight:700">Location needed to verify</span> — a check-in only counts when we can confirm you're at the spot. Tap to turn location on.</div>
+        </button>
       </sc-if>
       <sc-if value="{{ ciFar }}" hint-placeholder-val="{{ false }}">
         <div style="display:flex; align-items:flex-start; gap:10px; padding:13px 15px; border-radius:15px; background:#FFF4F4; border:1px solid #F6D9DA">
@@ -1030,7 +1068,7 @@ input::placeholder,textarea::placeholder{color:#93A3BF}
     </div>
     <div style="flex:none; padding:12px 22px 26px; background:#fff; border-top:1px solid #E9F0FB">
       <button onClick="{{ submitCheckIn }}" style="width:100%; display:flex; align-items:center; justify-content:center; gap:9px; height:54px; border:none; border-radius:16px; cursor:pointer; font-family:inherit; font-size:16px; font-weight:700; background:{{ ciBtnBg }}; color:{{ ciBtnFg }}"><span>Post check-in</span></button>
-      <sc-if value="{{ ciIncomplete }}" hint-placeholder-val="{{ true }}"><div style="margin-top:9px; text-align:center; font-size:12px; color:#93A3BF">A photo, a verdict, and standing within 150 m.</div></sc-if>
+      <sc-if value="{{ ciIncomplete }}" hint-placeholder-val="{{ true }}"><div style="margin-top:9px; text-align:center; font-size:12px; color:#93A3BF">{{ ciHint }}</div></sc-if>
     </div>
   </sc-if>
   <sc-if value="{{ ciDone }}" hint-placeholder-val="{{ false }}">
@@ -1040,7 +1078,7 @@ input::placeholder,textarea::placeholder{color:#93A3BF}
       <div style="margin-top:9px; font-size:14.5px; line-height:1.55; color:#5A6B8C; max-width:280px; text-wrap:pretty">{{ ciSpotName }} now has <span style="font-weight:700; color:#14213D">{{ ciSpotVisits }} real visits</span>. Your rec is live for people nearby.</div>
       <div style="margin-top:20px; display:flex; align-items:center; gap:7px; padding:9px 14px; border-radius:12px; background:#FEEFE2"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#C25E10" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4"></path><path d="m16.2 7.8 2.9-2.9"></path></svg><span style="font-size:12.5px; font-weight:600; color:#C25E10">{{ streakAfter }}-day streak</span></div>
       <button onClick="{{ ciViewSpot }}" style="margin-top:26px; width:100%; height:54px; border:none; border-radius:16px; background:#1B4BD2; color:#fff; font-family:inherit; font-size:16px; font-weight:700; cursor:pointer" style-hover="background:#1640B8" style-active="transform:scale(.98)">See the spot</button>
-      <button onClick="{{ closeCi }}" style="margin-top:8px; height:44px; border:none; background:none; font-family:inherit; font-size:14px; font-weight:600; color:#5A6B8C; cursor:pointer" style-hover="color:#1B4BD2">Keep scouting</button>
+      <button aria-label="Close" onClick="{{ closeCi }}" style="margin-top:8px; height:44px; border:none; background:none; font-family:inherit; font-size:14px; font-weight:600; color:#5A6B8C; cursor:pointer" style-hover="color:#1B4BD2">Keep scouting</button>
     </div>
   </sc-if>
 </div>
@@ -1053,7 +1091,7 @@ input::placeholder,textarea::placeholder{color:#93A3BF}
   <sc-if value="{{ android }}" hint-placeholder-val="{{ false }}"><div style="flex:none; height:10px"></div></sc-if>
   <sc-if value="{{ addForm }}" hint-placeholder-val="{{ true }}">
     <div style="flex:none; display:flex; align-items:center; justify-content:space-between; padding:0 14px 0 8px; border-bottom:1px solid #E9F0FB">
-      <button onClick="{{ pop }}" style="width:44px; height:44px; border:none; border-radius:50%; background:none; display:flex; align-items:center; justify-content:center; cursor:pointer; color:#5A6B8C" style-hover="background:#F1F5FC"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg></button>
+      <button aria-label="Back" onClick="{{ pop }}" style="width:44px; height:44px; border:none; border-radius:50%; background:none; display:flex; align-items:center; justify-content:center; cursor:pointer; color:#5A6B8C" style-hover="background:#F1F5FC"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg></button>
       <span style="font-size:15.5px; font-weight:700; color:#14213D">Add a place</span>
       <div style="width:44px"></div>
     </div>
@@ -1107,7 +1145,7 @@ input::placeholder,textarea::placeholder{color:#93A3BF}
       <div style="margin-top:20px; font-size:24px; font-weight:800; color:#14213D; letter-spacing:-.4px">You're scout #1 here</div>
       <div style="margin-top:9px; font-size:14.5px; line-height:1.55; color:#5A6B8C; max-width:280px; text-wrap:pretty"><span style="font-weight:700; color:#14213D">{{ npName }}</span> is on the map with your check-in as its first verified visit.</div>
       <button onClick="{{ viewNewPlace }}" style="margin-top:26px; width:100%; height:54px; border:none; border-radius:16px; background:#1B4BD2; color:#fff; font-family:inherit; font-size:16px; font-weight:700; cursor:pointer" style-hover="background:#1640B8">See the spot</button>
-      <button onClick="{{ pop }}" style="margin-top:8px; height:44px; border:none; background:none; font-family:inherit; font-size:14px; font-weight:600; color:#5A6B8C; cursor:pointer" style-hover="color:#1B4BD2">Done</button>
+      <button aria-label="Back" onClick="{{ pop }}" style="margin-top:8px; height:44px; border:none; background:none; font-family:inherit; font-size:14px; font-weight:600; color:#5A6B8C; cursor:pointer" style-hover="color:#1B4BD2">Done</button>
     </div>
   </sc-if>
 </div>
@@ -1209,13 +1247,24 @@ input::placeholder,textarea::placeholder{color:#93A3BF}
   <div style="width:100%; padding:22px 22px 34px; border-radius:24px 24px 0 0; background:#fff; animation:bsSheet .26s cubic-bezier(.22,.9,.3,1)">
     <div style="display:flex; align-items:center; gap:13px">
       <div style="flex:none; width:52px; height:52px; border-radius:15px; background:#1B4BD2; display:flex; align-items:center; justify-content:center"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"></path><circle cx="12" cy="10" r="3"></circle></svg></div>
-      <div style="flex:1"><div style="font-size:16.5px; font-weight:800; color:#14213D">Keep biteScout one tap away</div><div style="margin-top:3px; font-size:13px; line-height:1.45; color:#5A6B8C">Add it to your home screen — works offline for saved spots.</div></div>
+      <div style="flex:1"><div style="font-size:16.5px; font-weight:800; color:#14213D">Keep biteScout one tap away</div>
+        <sc-if value="{{ installReady }}" hint-placeholder-val="{{ false }}"><div style="margin-top:3px; font-size:13px; line-height:1.45; color:#5A6B8C">Add it to your home screen — opens full screen and works offline for saved spots.</div></sc-if>
+        <sc-if value="{{ installManual }}" hint-placeholder-val="{{ true }}"><div style="margin-top:3px; font-size:13px; line-height:1.45; color:#5A6B8C">Open your browser menu and choose <span style="font-weight:700">Install app</span> (or Add to Home screen).</div></sc-if>
+      </div>
     </div>
     <div style="margin-top:16px; display:flex; gap:10px">
       <button onClick="{{ dismissInstall }}" style="flex:1; height:52px; border:1.5px solid #DCE5F2; border-radius:15px; background:#fff; font-family:inherit; font-size:14.5px; font-weight:700; color:#5A6B8C; cursor:pointer">Not now</button>
       <button onClick="{{ doInstall }}" style="flex:1.4; height:52px; border:none; border-radius:15px; background:#1B4BD2; color:#fff; font-family:inherit; font-size:14.5px; font-weight:700; cursor:pointer" style-hover="background:#1640B8">Add to home screen</button>
     </div>
   </div>
+</div>
+</sc-if>
+
+<!-- ── Offline strip ── -->
+<sc-if value="{{ offline }}" hint-placeholder-val="{{ false }}">
+<div style="position:absolute; left:0; right:0; bottom:74px; z-index:45; display:flex; align-items:center; justify-content:center; gap:8px; padding:9px 14px; background:#14213D">
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#F9A76A" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h.01"></path><path d="M8.5 16.429a5 5 0 0 1 7 0"></path><path d="M5 12.859a10 10 0 0 1 14 0"></path><path d="m2 2 20 20"></path></svg>
+  <span style="font-size:12px; font-weight:600; color:#fff">Offline — saved spots still work, check-ins will sync later</span>
 </div>
 </sc-if>
 
@@ -1235,14 +1284,14 @@ input::placeholder,textarea::placeholder{color:#93A3BF}
 class Component extends DCLogic {
   state = {
     platform: 'android', phase: 'onboard',
-    ob: 0, loc: 'idle', dlg: false, email: '', emailErr: false, auth: 'form', gLoading: false,
-    tab: 0, stack: [], city: '2000', chip: 0, nearbyMode: 'map', pin: null, mapQuery: '', mapFollow: true,
+    ob: 0, loc: 'idle', email: '', emailErr: false, auth: 'form', gLoading: false,
+    tab: 0, stack: [], city: '2000', chip: 0, nearbyMode: 'map', pin: null, mapQuery: '', mapFollow: true, geoTried: false,
     query: '', recent: ['nasi lemak', 'kopitiam', 'char kuey teow'],
     ci: null, ciPhoto: null, ciVerdict: null, ciNote: '', ciDone: false,
     np: { name: '', cuisine: null, price: null, halal: null, photo: null }, addDone: false, newId: null,
     newListOpen: false, nlName: '', nlPriv: 0, addSpotsOpen: false,
     toast: '', notifsRead: false, cityPicker: false, install: false, installSeen: false,
-    cfgOpen: false, cfgText: '', cfgErr: '',
+    cfgOpen: false, cfgText: '', cfgErr: '', tick: 0,
   };
 
   TABS = [
@@ -1280,14 +1329,47 @@ class Component extends DCLogic {
     { key: 'halal', label: 'Halal', d1: 'M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z', d2: 'm9 12 2 2 4-4' },
   ];
 
+  bump = () => { this._pending = true; this.setState(s => ({ tick: (s.tick || 0) + 1 })); };
+  sig() {
+    const S = BS.store, g = BS.geo;
+    return [S.checkins.length, S.spots.length, Object.keys(S.saved).filter(k => S.saved[k]).length,
+      S.lists.length, JSON.stringify(S.listAdd).length, S.user ? S.user.uid : '-',
+      g.pos ? g.pos.lat.toFixed(5) + ',' + g.pos.lng.toFixed(5) : '-', g.accuracy || 0,
+      g.error || '-', BS.cloud.on ? 1 : 0, BS.online ? 1 : 0, BS.installable ? 1 : 0].join('|');
+  }
+  subscribe() {
+    if (!this._un) this._un = BS.onChange(this.bump);
+    if (!this._poll) {
+      this._lastSig = this.sig();
+      this._poll = setInterval(() => {
+        const s = this.sig();
+        if (s !== this._lastSig) { this._lastSig = s; this.bump(); }
+        // the map lives outside React, so nudge it on the same tick
+        if (this._map && this._mapReady) { this.drawMe(); this.drawMarkers(false); }
+      }, 1000);
+    }
+  }
   componentDidMount() {
-    this._un = BS.onChange(() => this.forceUpdate());
+    this.subscribe();
+    // Android's back gesture should walk the app, not close the PWA
+    try { history.replaceState({ bs: 0 }, ''); history.pushState({ bs: 1 }, ''); } catch (e) {}
+    this._onPop = () => {
+      const S = this.state;
+      if (S.cfgOpen || S.cityPicker || S.newListOpen || S.addSpotsOpen || S.install) this.setState({ cfgOpen: false, cityPicker: false, newListOpen: false, addSpotsOpen: false, install: false });
+      else if (S.ci) this.setState({ ci: null, ciDone: false, ciPhoto: null, ciVerdict: null, ciNote: '' });
+      else if (S.stack.length) this.pop();
+      else if (S.tab !== 0) this.setState({ tab: 0 });
+      else if (S.phase === 'app') this.flash('Press back again to leave');
+      try { history.pushState({ bs: 1 }, ''); } catch (e) {}
+    };
+    window.addEventListener('popstate', this._onPop);
     BS.start();
     BS.completeEmailLink().then(ok => { if (ok) this.setState({ phase: 'app' }); });
     this.applyProps();
   }
   componentDidUpdate(pp) {
     if (pp && (pp.startPhase !== this.props.startPhase || pp.startTab !== this.props.startTab)) this.applyProps();
+    this.subscribe();
     this.syncMap();
   }
   mapRef = React.createRef();
@@ -1314,7 +1396,7 @@ class Component extends DCLogic {
           paint: { 'circle-color': '#2E8FE0', 'circle-opacity': 0.12, 'circle-stroke-color': '#2E8FE0',
             'circle-stroke-opacity': 0.35, 'circle-stroke-width': 1,
             'circle-radius': ['interpolate', ['linear'], ['zoom'], 10, 3, 20, ['/', ['get', 'acc'], 0.6]] } });
-        this.forceUpdate();
+        this.setState(s => ({ tick: (s.tick || 0) + 1 }));
         this.drawMarkers(true);
         this.drawMe();
       });
@@ -1369,8 +1451,8 @@ class Component extends DCLogic {
         ? '<path d="M20 6 9 17l-5-5"/>'
         : '<circle cx="12" cy="12" r="9"/><path d="M12 16v-4"/><path d="M12 8h.01"/>';
       el.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="' + stroke +
-        '" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">' + icon + '</svg><span>' +
-        s.name.replace(/[<>&]/g, '') + '</span>';
+        '" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">' + icon + '</svg><span></span>';
+      el.lastChild.textContent = s.name;
       el.addEventListener('click', ev => {
         ev.stopPropagation();
         this.setState({ pin: s.id, mapFollow: false });
@@ -1386,7 +1468,9 @@ class Component extends DCLogic {
     }
   }
   componentWillUnmount() {
-    if (this._un) this._un();
+    if (this._un) { this._un(); this._un = null; }
+    if (this._poll) { clearInterval(this._poll); this._poll = null; }
+    if (this._onPop) window.removeEventListener('popstate', this._onPop);
     clearTimeout(this._t); clearTimeout(this._g); clearTimeout(this._toast); clearTimeout(this._mapWait);
     if (this._map) { this._map.remove(); this._map = null; }
   }
@@ -1451,6 +1535,7 @@ class Component extends DCLogic {
   }
   renderVals() {
     const S = this.state, ST = BS.store, ios = S.platform === 'ios';
+    const gpsReady = !!BS.geo.pos;
     const top = S.stack[S.stack.length - 1] || {};
     const regionSpots = this.inRadius();
     const chip = this.CHIPS[S.chip];
@@ -1463,8 +1548,8 @@ class Component extends DCLogic {
     const results = q ? this.all().filter(s => (s.name + ' ' + s.cuisine + ' ' + s.area).toLowerCase().includes(q)) : [];
     const savedIds = Object.keys(ST.saved).filter(k => ST.saved[k] && this.find(k));
     const ciSpot = this.find(S.ci) || spotRaw;
-    const ciDist = BS.distanceTo(ciSpot);
-    const ciNear = ciDist === null ? true : ciDist <= BS.RADIUS;
+    const ciDist = gpsReady ? BS.distanceTo(ciSpot) : null;
+    const ciNear = ciDist !== null && ciDist <= BS.RADIUS;
     const ciReady = !!S.ciPhoto && S.ciVerdict !== null && ciNear;
     const npReady = !!(S.np.name.trim() && S.np.cuisine && S.np.photo);
     const me = ST.user || { name: 'You', initials: 'ME', email: 'not signed in' };
@@ -1489,10 +1574,7 @@ class Component extends DCLogic {
       obBack: () => this.setState(p => ({ ob: Math.max(0, p.ob - 1) })),
       skipToAuth: () => this.setState({ ob: 3 }),
       locIdle: !gpsOn && BS.geo.error !== 'denied', locGranted: gpsOn, locDenied: BS.geo.error === 'denied',
-      dlg: S.dlg,
       askLoc: () => { BS.requestGeo().then(pos => { if (pos) { this.flash('Location on'); clearTimeout(this._t); this._t = setTimeout(() => this.setState({ ob: 3 }), 700); } }); },
-      allowLoc: () => this.setState({ dlg: false }),
-      denyLoc: () => this.setState({ dlg: false }),
       email: S.email, emailErr: S.emailErr, emailBorder: S.emailErr ? '#E5484D' : '#DCE5F2',
       emailChange: e => this.setState({ email: e.target.value, emailErr: false }),
       emailKey: e => { if (e.key === 'Enter') this.submitEmail(); },
@@ -1529,8 +1611,15 @@ class Component extends DCLogic {
         following: Object.keys(ST.following).filter(k => ST.following[k]).length,
         nextLevel: 'Next: Trusted Scout', toNext: Math.max(0, 20 - myCi.length),
         progress: Math.min(100, Math.round(myCi.length / 20 * 100)) },
-      cityLabel: gpsOn ? 'You · ±' + BS.geo.accuracy + ' m · ' + (this.RADII.find(r => r.code === S.city) || this.RADII[1]).short : (BS.geo.error === 'denied' ? 'Location off — tap to fix' : 'Finding you…'),
+      cityLabel: gpsOn
+        ? 'You · ±' + BS.geo.accuracy + ' m · ' + (this.RADII.find(r => r.code === S.city) || this.RADII[1]).short
+        : BS.geo.error === 'denied' ? 'Location off — tap to turn on'
+        : BS.geo.error ? "Can't find you — tap to retry"
+        : S.geoTried ? "Still looking — tap to retry" : 'Finding you…',
+      retryGeo: () => { this.setState({ geoTried: true }); BS.requestGeo().then(p => this.flash(p ? 'Got your location' : "Still can't get a fix")); },
+      approx: !gpsOn,
       cityShort: (this.RADII.find(r => r.code === S.city) || this.RADII[1]).short,
+      sortLabel: (gpsOn ? 'Sorted by distance' : 'Estimated distance') + ' · within ' + (this.RADII.find(r => r.code === S.city) || this.RADII[1]).short,
       gpsAcc: BS.geo.accuracy || 0,
       verifiedCount: regionSpots.length,
       verifiedHeadline: (() => { const v = regionSpots.filter(s => BS.visitsFor(s.id) > 0).length;
@@ -1546,11 +1635,13 @@ class Component extends DCLogic {
       clearChips: () => this.setState({ chip: 0 }),
       feedSpots: feed.map(s => this.card(s)), feedEmpty: feed.length === 0,
       streakLine: this.streak() > 0 ? this.streak() + '-day scout streak' : 'Start your scout streak',
-      hasUnread: !S.notifsRead,
+      hasUnread: BS.unseenActivity() > 0,
       gpsOn, gpsOff: !gpsOn,
       openSearch: () => this.push('search'), openNotifs: () => this.push('notifs'),
       openSettings: () => this.push('settings'),
-      openCityPicker: () => { if (!gpsOn) BS.requestGeo(); this.setState({ cityPicker: true }); },
+      openCityPicker: () => this.setState({ cityPicker: true }),
+      locHeaderTap: () => { if (gpsOn) return this.setState({ cityPicker: true });
+        this.setState({ geoTried: true }); BS.requestGeo().then(p => this.flash(p ? 'Got your location' : "Can't get a fix — check location permission")); },
       closeSheets: () => this.setState({ cityPicker: false, newListOpen: false, addSpotsOpen: false, cfgOpen: false }),
       noop: e => { if (e && e.stopPropagation) e.stopPropagation(); },
       cityPickerOpen: S.cityPicker,
@@ -1565,6 +1656,7 @@ class Component extends DCLogic {
       nearbyMap: S.nearbyMode === 'map', nearbyList: S.nearbyMode === 'list',
       mapRef: this.mapRef, mapLoading: !this._mapReady,
       recenterMap: () => {
+        this.setState({ geoTried: true });
         BS.requestGeo().then(() => {
           const p = BS.geo.pos || BS.store.origin;
           if (this._map && p) this._map.easeTo({ center: [p.lng, p.lat], zoom: 16, duration: 500 });
@@ -1591,9 +1683,9 @@ class Component extends DCLogic {
             pick: () => { this.setState({ pin: s.id, mapQuery: '', mapFollow: false });
               if (this._map) this._map.easeTo({ center: [s.lng, s.lat], zoom: 16, duration: 600 }); } })); })(),
       mapNoResults: S.mapQuery.trim().length > 0 && this.all().filter(s => (s.name + ' ' + s.cuisine + ' ' + s.area).toLowerCase().includes(S.mapQuery.trim().toLowerCase())).length === 0,
-      followOn: S.mapFollow, followOff: !S.mapFollow,
-      followBg: S.mapFollow ? '#1B4BD2' : 'rgba(255,255,255,.95)',
-      followFg: S.mapFollow ? '#fff' : '#1B4BD2',
+      followOn: S.mapFollow && gpsOn, followOff: !(S.mapFollow && gpsOn),
+      followBg: S.mapFollow && gpsOn ? '#1B4BD2' : 'rgba(255,255,255,.95)',
+      followFg: S.mapFollow && gpsOn ? '#fff' : '#1B4BD2',
       toggleFollow: () => {
         const on = !S.mapFollow;
         this.setState({ mapFollow: on });
@@ -1607,8 +1699,10 @@ class Component extends DCLogic {
           pick: () => this.openCi(s.id) }; }),
       addPlace: () => { this.setState({ np: { name: '', cuisine: null, price: null, halal: null, photo: null }, addDone: false }); this.push('addplace'); },
 
-      lists: this.allLists().map(l => ({ name: l.name, count: this.listItems(l).length, open: () => this.push('list', l.id) })),
-      list: { name: listRaw.name, count: this.listItems(listRaw).length, note: listRaw.note },
+      lists: this.allLists().map(l => { const n = this.listItems(l).length;
+        return { name: l.name, count: n + (n === 1 ? ' spot' : ' spots'), open: () => this.push('list', l.id) }; }),
+      list: (() => { const n = this.listItems(listRaw).length;
+        return { name: listRaw.name, count: n + (n === 1 ? ' spot' : ' spots'), note: listRaw.note }; })(),
       listSpots: this.listItems(listRaw).map(id => this.find(id)).filter(Boolean).map(s => this.card(s)),
       openAddSpots: () => this.setState({ addSpotsOpen: true }),
       addSpotsOpen: S.addSpotsOpen,
@@ -1643,9 +1737,12 @@ class Component extends DCLogic {
       overlayTop: ios ? 56 : 14,
 
       query: S.query, hasQuery: q.length > 0, noQuery: q.length === 0,
-      queryChange: e => this.setState({ query: e.target.value }),
+      queryChange: e => { const v = e.target.value; this.setState({ query: v });
+        clearTimeout(this._recT); this._recT = setTimeout(() => BS.addRecent(v), 1200); },
       clearQuery: () => this.setState({ query: '' }),
-      recent: S.recent.map(r => ({ label: r, pick: () => this.setState({ query: r }) })),
+      recent: BS.recent().map(r => ({ label: r, pick: () => this.setState({ query: r }) })),
+      hasRecent: BS.recent().length > 0,
+      clearRecent: () => { BS.clearRecent(); this.flash('Recent searches cleared'); },
       trending: [
         { n: '01', label: 'nasi lemak', note: 'top search' },
         { n: '02', label: 'kopitiam', note: 'trending' },
@@ -1668,6 +1765,16 @@ class Component extends DCLogic {
       beFirst: () => this.openCi(spotRaw.id),
       facts: this.FACTS_ICONS.map(f => ({ ...f, value: f.key === 'hours' ? spotRaw.hours : f.key === 'price' ? 'RM' + spotRaw.priceNum + ' pp' : spotRaw.halal })),
       saveActive: () => this.toggleSave(spotRaw.id),
+      directions: () => {
+        const from = BS.geo.pos;
+        const url = 'https://www.google.com/maps/dir/?api=1&destination=' + spotRaw.lat + ',' + spotRaw.lng +
+          (from ? '&origin=' + from.lat + ',' + from.lng : '') + '&travelmode=walking';
+        window.open(url, '_blank', 'noopener');
+      },
+      photoStrip: BS.photosFor(spotRaw.id).slice(0, 8).map((p, i) => ({
+        el: React.createElement('img', { src: p, alt: '', style: { width: 96, height: 96, borderRadius: 14, objectFit: 'cover', flex: 'none' } }), key: i })),
+      hasGallery: BS.photosFor(spotRaw.id).length > 1,
+      galleryCount: BS.photosFor(spotRaw.id).length + ' check-in photos',
       shareSpot: () => {
         const txt = spotRaw.name + ' — verified on biteScout';
         if (navigator.share) navigator.share({ title: 'biteScout', text: txt }).catch(() => {});
@@ -1684,7 +1791,7 @@ class Component extends DCLogic {
           bg: !S.notifsRead && i < 2 ? '#fff' : '#F9FBFE', bd: !S.notifsRead && i < 2 ? '#D7E5FA' : '#E9F0FB',
           open: () => this.push('spot', c.spotId) }; }),
       activityEmpty: BS.activity().length === 0,
-      markRead: () => { this.setState({ notifsRead: true }); this.flash('All caught up'); },
+      markRead: () => { BS.markActivitySeen(); this.setState({ notifsRead: true }); this.flash('All caught up'); },
 
       settingRows: [
         { key: 'loc', label: 'Location access', note: gpsOn ? 'On · ±' + BS.geo.accuracy + ' m' : 'Needed to verify check-ins' },
@@ -1712,7 +1819,7 @@ class Component extends DCLogic {
 
       ciOpen: !!S.ci, ciForm: !S.ciDone, ciDone: S.ciDone,
       ciSpotName: ciSpot.name, ciSpotVisits: BS.visitsFor(ciSpot.id), streakAfter: this.streak(),
-      ciNear: ciNear, ciFar: !ciNear, ciDistLabel: BS.fmtDist(ciDist),
+      ciNear: ciNear, ciFar: !ciNear && gpsReady, ciNoFix: !gpsReady, ciDistLabel: BS.fmtDist(ciDist),
       closeCi: () => this.setState({ ci: null, ciDone: false, ciPhoto: null, ciVerdict: null, ciNote: '' }),
       ciViewSpot: () => { const id = S.ci; this.setState({ ci: null, ciDone: false, ciPhoto: null, ciVerdict: null, ciNote: '' }); this.push('spot', id); },
       noPhoto: !S.ciPhoto, hasPhoto: !!S.ciPhoto,
@@ -1725,11 +1832,18 @@ class Component extends DCLogic {
         pick: () => this.setState({ ciVerdict: i }) })),
       ciNote: S.ciNote, ciNoteChange: e => this.setState({ ciNote: e.target.value }),
       ciIncomplete: !ciReady, ciBtnBg: ciReady ? '#1B4BD2' : '#E7ECF5', ciBtnFg: ciReady ? '#fff' : '#A9B6CC',
+      ciHint: !gpsReady ? 'Location must be on to verify a check-in.'
+        : !ciNear ? 'Get within 150 m of the spot to check in.'
+        : !S.ciPhoto ? 'A photo is required.'
+        : S.ciVerdict === null ? 'Pick a verdict to post.' : 'Ready to post.',
       submitCheckIn: () => {
         if (!ciReady) return;
+        if (!BS.canCheckinAgain(S.ci, 3)) return this.flash('You already checked in here — one per visit');
         BS.addCheckin(S.ci, this.VERDICTS[S.ciVerdict].label, S.ciNote, S.ciPhoto);
+        BS.buzz(24);
         this.setState({ ciDone: true });
       },
+      ciRepeat: !BS.canCheckinAgain(S.ci, 3),
 
       addForm: !S.addDone, addDone: S.addDone,
       npName: S.np.name, npNameChange: e => this.setState(p => ({ np: { ...p.np, name: e.target.value } })),
@@ -1757,9 +1871,14 @@ class Component extends DCLogic {
       },
       viewNewPlace: () => { const id = S.newId; this.setState(p => ({ stack: p.stack.slice(0, -1) })); this.push('spot', id); },
 
-      installOpen: S.install, showInstall: () => this.setState({ install: true }),
+      installOpen: S.install && !BS.standalone, showInstall: () => this.setState({ install: true }),
       dismissInstall: () => this.setState({ install: false }),
-      doInstall: () => { this.setState({ install: false }); this.flash('Use Chrome menu → Install app'); },
+      installReady: BS.installable, installManual: !BS.installable,
+      doInstall: () => {
+        if (!BS.installable) { this.setState({ install: false }); return this.flash('Use the browser menu → Install app'); }
+        BS.promptInstall().then(r => { this.setState({ install: false }); this.flash(r === 'accepted' ? 'Installing biteScout…' : 'Maybe next time'); });
+      },
+      offline: !BS.online,
 
       toast: !!S.toast, toastText: S.toast,
     };

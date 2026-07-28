@@ -12,7 +12,7 @@
 
   // ── store ────────────────────────────────────────────────────────────
   function blank() {
-    return { v: STORE_VERSION, spots: [], checkins: [], saved: {}, lists: [], listAdd: {}, following: {},
+    return { v: STORE_VERSION, spots: [], checkins: [], saved: {}, lists: [], listAdd: {}, following: {}, recent: [], seenActivity: [],
              msgs: {}, user: null, origin: null, seeded: false, settings: { loc: true, push: false, halal: false } };
   }
   // v1 stores carried invented endorsers and fabricated visit counts — scrub them
@@ -227,8 +227,62 @@
   }
 
   // ── public API ───────────────────────────────────────────────────────
+  // Chrome fires this once; keep it so "Add to home screen" can be a real install
+  var installEvent = null;
+  window.addEventListener('beforeinstallprompt', function (e) { e.preventDefault(); installEvent = e; emit(); });
+  window.addEventListener('appinstalled', function () { installEvent = null; emit(); });
+  var online = navigator.onLine !== false;
+  window.addEventListener('online', function () { online = true; emit(); });
+  window.addEventListener('offline', function () { online = false; emit(); });
+
   var BS = {
     RADIUS: CHECKIN_RADIUS_M,
+    get online() { return online; },
+    get installable() { return !!installEvent; },
+    get standalone() {
+      return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+    },
+    promptInstall: function () {
+      if (!installEvent) return Promise.resolve('unavailable');
+      var e = installEvent;
+      return e.prompt().then(function () { return e.userChoice; })
+        .then(function (r) { installEvent = null; emit(); return (r && r.outcome) || 'done'; })
+        .catch(function () { return 'dismissed'; });
+    },
+    buzz: function (ms) { try { if (navigator.vibrate) navigator.vibrate(ms || 18); } catch (e) {} },
+    recent: function () { return store.recent || []; },
+    addRecent: function (q) {
+      var t = (q || '').trim();
+      if (t.length < 2) return;
+      store.recent = [t].concat((store.recent || []).filter(function (x) { return x.toLowerCase() !== t.toLowerCase(); })).slice(0, 6);
+      persist();
+    },
+    clearRecent: function () { store.recent = []; emit(); },
+    // one check-in per visit: block a repeat at the same spot within a few hours
+    lastCheckinAt: function (spotId) {
+      var me = (store.user && store.user.uid) || 'local';
+      var mine = store.checkins.filter(function (c) { return c.spotId === spotId && c.userId === me; });
+      if (!mine.length) return null;
+      return mine.map(function (c) { return new Date(c.createdAt).getTime(); }).sort().pop();
+    },
+    canCheckinAgain: function (spotId, hours) {
+      var t = this.lastCheckinAt(spotId);
+      if (!t) return true;
+      return (Date.now() - t) > (hours || 3) * 3600000;
+    },
+    photosFor: function (id) {
+      return store.checkins.filter(function (c) { return c.spotId === id && c.photo; })
+        .sort(function (a, b) { return a.createdAt < b.createdAt ? 1 : -1; })
+        .map(function (c) { return c.photo; });
+    },
+    unseenActivity: function () {
+      var seen = store.seenActivity || [];
+      return store.checkins.filter(function (c) { return seen.indexOf(c.id) < 0; }).length;
+    },
+    markActivitySeen: function () {
+      store.seenActivity = store.checkins.map(function (c) { return c.id; });
+      emit();
+    },
     get store() { return store; },
     get geo() { return geo; },
     get cloud() { return { on: !!cloud.db, configured: !!getConfig(), error: cloud.error }; },
@@ -317,7 +371,7 @@
     signInLocal: function (name) {
       var n = (name || 'Me').trim();
       var parts = n.split(/\s+/).filter(Boolean);
-      var ini = (parts.length > 1 ? parts[0][0] + parts[1][0] : n.slice(0, 2)).toUpperCase();
+      var ini = /^you$/i.test(n) ? 'ME' : (parts.length > 1 ? parts[0][0] + parts[1][0] : n.slice(0, 2)).toUpperCase();
       store.user = { uid: 'local', name: n, email: 'this device only', initials: ini, local: true };
       emit(); return Promise.resolve(store.user);
     },

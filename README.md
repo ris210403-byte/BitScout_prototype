@@ -77,6 +77,28 @@ service cloud.firestore {
 Until you connect Firebase the app runs in on-device mode: everything works and persists, it just
 doesn't sync between phones. Settings → "Reset prototype data" wipes it.
 
+## v13
+
+Realtime for real: the app now re-renders from store changes with no interaction (a listener plus a
+1-second signature poll that also nudges the map layer). Another phone's Firestore check-in, your
+own GPS movement, the blue dot, the accuracy ring and every distance update on their own.
+
+## Overnight pass (v12)
+
+Fixed: live store→UI refresh (counts, photos and activity now update the moment a check-in lands,
+without needing another tap), check-ins blocked when GPS can't confirm you, one check-in per spot
+per 3 hours, "1 spot" pluralisation, bigger tap targets on the location header and "See all",
+local-account initials, map marker names containing "&", removed the fake iOS permission dialog
+(the app asks the browser for real).
+
+Added: **Get directions** on a spot (opens Google Maps walking route from where you are),
+**photo gallery** on a spot once there are several check-in photos, **real install prompt**
+(uses Chrome's beforeinstallprompt instead of telling you to find the menu; hidden when already
+installed), **offline strip**, **Android hardware-back navigation** (back walks sheets → pages →
+tabs instead of closing the app), **recent searches** that remember what you actually searched,
+haptic buzz on a posted check-in, activity badge driven by unseen check-ins, and aria-labels on
+icon-only buttons.
+
 ## What is real vs. mocked in this build
 
 Real: your GPS position and true distances to every spot, the 150 m check-in rule, camera
